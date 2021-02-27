@@ -148,42 +148,81 @@
 </header>
 
     <div id="article-banner">
-  <h2>Archives</h2>
-  <p class="post-date">文章归档</p>
+  <h2></h2>
+  <p class="post-date">2021-02-27</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
 </div>
-<main class="app-body" id="archives">
-  
-  
-  
-    <section class="time-section">
-  <h1 class="section-year">
-    2021
-  </h1>
-  <div class="section-list">
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><p><a href="https://nimoc.io" style="display:block;text-align: center;padding-top:25%;color:#2C8AEE;font-size:4em;font-family:'Palatino Linotype', 'Book Antiqua', Palatino, serif;text-decoration:none;"  >nimoc.io</a></p>
+<script>
+location.href = 'https://nimoc.io'
+</script>
+</section>
+    <script src="https://utteranc.es/client.js"
+            repo="nimoc/blog"
+            issue-number=""
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <!-- Tags START -->
     
+    <!-- Tags END -->
+    <!-- NAV START -->
     
-      <div class="section-list-item">
-        <a href="/concurrency_methodology/" class="archive-title">解决并发方法论</a>
-        <p class="archive-date">02-27</p>
-      </div>
+    <!-- NAV END -->
+
+    <!-- 二维码 START -->
     
-      <div class="section-list-item">
-        <a href="/cache_practice/" class="archive-title">缓存实践</a>
-        <p class="archive-date">02-27</p>
-      </div>
+    <!-- 二维码 END -->
+    
+      <!-- No Comment -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">目录</strong>
+    
+      <ol class="nav">none</ol>
     
   </div>
-</section>
+</aside>
+
   
+  <!-- Catalog END -->
+
 </main>
 
 <script>
   (function () {
-    var url = 'https://nimoc.io/tags/并发/index.html';
-    $('#article-banner').geopattern(url);
-    $('.header').removeClass('fixed-header');
+    var url = 'https://nimoc.io/notice/index.html';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+
   })();
 </script>
+
+
+
+
+
+
+
     <div class="scroll-top">
   <span class="arrow-icon"></span>
 </div>
