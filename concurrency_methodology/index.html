@@ -8,7 +8,7 @@
   
   <title>
     
-      nimoc.io 技术博客
+      解决并发方法论 | nimoc.io 技术博客
     
   </title>
   
@@ -70,7 +70,7 @@
       
         <li class="list-item">
           
-            <a href="/" class="item-link active">主页</a>
+            <a href="/" class="item-link">主页</a>
           
         </li>
       
@@ -109,7 +109,7 @@
         
           <li class="menu-item">
             
-              <a href="/" class="menu-link mobile-active">主页</a>
+              <a href="/" class="menu-link">主页</a>
             
           </li>
         
@@ -142,75 +142,51 @@
   </div>
 </header>
 
-    <div id="about-banner" style="height:250px;background-image: url(https://pic4.zhimg.com/80/v2-4df3b54a4f98886029524274a9cbbe35_r.jpg)"></div>
-<div class="author">
-  <div class="head">
-    <img src="https://avatars.githubusercontent.com/u/3949015?s=460&v=4" />
+    <div id="article-banner">
+  <h2>解决并发方法论</h2>
+  <p class="post-date">2021-02-27</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
   </div>
-  <h3>nimoc</h3>
-  
-    <p class="description">👌 优秀的设计，简洁实现，满足复杂的需求。</p>
-  
-  <section class="share-icons">
-    
-    
-    
-      <a class="icon-github" href="https://github.com/nimoc" target="_blank">
-        <span class="fa-stack fa-lg">
-          <i class="fa fa-circle fa-stack-2x"></i>
-          <i class="fa fa-github fa-stack-1x fa-inverse"></i>
-        </span>
-      </a>
-    
-    
-    
-      <a class="icon-zhihu" href="https://www.zhihu.com/people/nimoc" target="_blank">
-        <span class="fa-stack fa-lg">
-          <i class="fa fa-circle fa-stack-2x"></i>
-          <i class="fa fa-stack-1x fa-inverse">知</i>
-        </span>
-      </a>
-    
-    
-  </section>
 </div>
-<main class="app-body">
-  
-    <article class="article-card">
-      <h2 class="article-head">
-        <a href="/cache_practice/">缓存实践</a>
-      </h2>
-      <p class="article-date">February 27, 2021</p>
-      
-        
-  <a href="/tags#后端" >
-    <span class="tag-code">后端</span>
-  </a>
-
-      
-      <div class="article-summary">
-        
-          缓存实践
-本文将完整介绍以下知识点：
-
-读多写少
-读多写多
-缓存与数据库的一致性
-
-读多写少不使用缓存例如我们在开发提问系统，提问访问量非常大，每秒一万次访问。
-最开始的伪代码如下：
-12345678910111213function QuestionByID(id) &#123;  row ...
-        
-      </div>
-      <a class="more" href="/cache_practice/">阅读全部内容</a>
-    </article>
-  
-    <article class="article-card">
-      <h2 class="article-head">
-        <a href="/concurrency_methodology/">解决并发方法论</a>
-      </h2>
-      <p class="article-date">February 27, 2021</p>
-      
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h1 id="解决并发方法论"><a href="#解决并发方法论" class="headerlink" title="解决并发方法论"></a>解决并发方法论</h1><p><a href="https://nimoc.io/notice/index.html"><img src="http://nimoc.io/notice/index.svg" alt="nimoc.io"></a></p>
+<p>首先记住以下几点</p>
+<ol>
+<li><strong>原子性</strong>：确认哪些操作不是原子性，考虑不是原子性会导致什么问题。并考虑所有操作都可能失败或进程/协程中断</li>
+<li><strong>操作延迟</strong>：代码中每个操作的执行时间都是不确定的。每一行之间都可能出现非常大的延迟，需假设每行代码之间都有 sleep 操作。网络io中客户端收到消息的时间距离服务端发送消息已经过了很久，需假设:0s client 发起请求-&gt; 2s server 接收请求 -&gt; 4s server 响应数据 -&gt; 6s client 接收响应</li>
+<li><strong>竞态</strong>：考虑会有其他线程/协程/同一时间对数据进行修改</li>
+<li>通过时序图分析问题 <a target="_blank" rel="noopener" href="https://plantuml.com/zh/">https://plantuml.com/zh/</a></li>
+</ol>
+<p>以 redis 互斥锁为案例实现上述方法论：</p>
+<p>先看一下不严谨的上锁操作会产生的问题</p>
+<p><img src="/./concurrency_methodology/1-1.png"></p>
+<p>可以通过 SET key value  EX seconds NX 保证原子性</p>
+<p><img src="/./concurrency_methodology/1-2.png"></p>
+<p>上锁操作已经解决了原子性问题，接下来看不严谨的解锁操作会产生的问题</p>
+<p><img src="/./concurrency_methodology/1-3.png"></p>
+<p>为了解决延迟导致的错误解锁，通过不严谨的超时判断解决问题</p>
+<blockquote>
+<p>请先不要看红色注释框,自己分析存在的问题。然后查看红色注释框确认答案</p>
+</blockquote>
+<p><img src="/./concurrency_methodology/1-4.png"></p>
+<p>在上锁时设置密码，在解锁时验证密码以避免删除了别人的锁</p>
+<p><img src="/./concurrency_methodology/1-5.png"></p>
+<p>TODO:解锁失败后锁回滚，心跳续命锁，etcd分布式锁</p>
+</section>
+    <script src="https://utteranc.es/client.js"
+            repo="nimoc/blog"
+            issue-number=""
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
         
   <a href="/tags#后端" >
     <span class="tag-code">后端</span>
@@ -220,51 +196,79 @@
     <span class="tag-code">并发</span>
   </a>
 
-      
-      <div class="article-summary">
-        
-          解决并发方法论
-首先记住以下几点
-
-原子性：确认哪些操作不是原子性，考虑不是原子性会导致什么问题。并考虑所有操作都可能失败或进程/协程中断
-操作延迟：代码中每个操作的执行时间都是不确定的。每一行之间都可能出现非常大的延迟，需假设每行代码之间都有 sleep 操作。网络io中客户端收到消息的时 ...
-        
       </div>
-      <a class="more" href="/concurrency_methodology/">阅读全部内容</a>
-    </article>
-  
-    <article class="article-card">
-      <h2 class="article-head">
-        <a href="/f2e_up/">Web 前端的困局与突破</a>
-      </h2>
-      <p class="article-date">May 11, 2020</p>
-      
-        
-  <a href="/tags#前端" >
-    <span class="tag-code">前端</span>
-  </a>
-
-  <a href="/tags#职业思考建议" >
-    <span class="tag-code">职业思考建议</span>
-  </a>
-
-      
-      <div class="article-summary">
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/f2e_up/">
+        <span class="nav-arrow">← </span>
         
           Web 前端的困局与突破
-
-每个Web前端都会不时思考自身对于团队的价值和在团队中的话语权,这类思考背后存在困局和突破
-
-困局困局必然是负能量,耐下心来了解困局后再看突破.
-价值在团队中前端的职责是实现原型和设计工作中的客户端部分,是实现者.很少参与功能/程序设计.极少数业务场景下是重前端的 ...
         
-      </div>
-      <a class="more" href="/f2e_up/">阅读全部内容</a>
-    </article>
+      </a>
+    
+    
+      <a class="nav-right" href="/cache_practice/">
+        
+          缓存实践
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- No Comment -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
   
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">目录</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#%E8%A7%A3%E5%86%B3%E5%B9%B6%E5%8F%91%E6%96%B9%E6%B3%95%E8%AE%BA"><span class="toc-nav-text">解决并发方法论</span></a></li></ol>
+    
+  </div>
+</aside>
 
   
+  <!-- Catalog END -->
+
 </main>
+
+<script>
+  (function () {
+    var url = 'https://nimoc.io/concurrency_methodology/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+
+  })();
+</script>
+
+
+
+
+
+
 
     <div class="scroll-top">
   <span class="arrow-icon"></span>

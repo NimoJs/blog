@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  
+    <link rel="shortcut icon" type="image/ico" href="https://avatars.githubusercontent.com/u/3949015?s=460&amp;v=4"/>
+  
+  <title>
+    
+      缓存实践 | nimoc.io 技术博客
+    
+  </title>
+  
+    
+  <meta name="description" content="樱花博客，一个记录个人成长的地方。">
+  
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo" style="border-radius:100%;background-image:url(https://avatars.githubusercontent.com/u/3949015?s=460&v=4);"></div>
+      <span>nimoc.io 技术博客</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">主页</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">标签</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">时间线</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">开源项目</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">关于我</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">主页</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">标签</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">时间线</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">开源项目</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">关于我</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>缓存实践</h2>
+  <p class="post-date">2021-02-27</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h1 id="缓存实践"><a href="#缓存实践" class="headerlink" title="缓存实践"></a>缓存实践</h1><p><a href="https://nimoc.io/notice/index.html"><img src="http://nimoc.io/notice/index.svg" alt="nimoc.io"></a></p>
+<p>本文将完整介绍以下知识点：</p>
+<ol>
+<li>读多写少</li>
+<li>读多写多</li>
+<li>缓存与数据库的一致性</li>
+</ol>
+<h2 id="读多写少"><a href="#读多写少" class="headerlink" title="读多写少"></a>读多写少</h2><h3 id="不使用缓存"><a href="#不使用缓存" class="headerlink" title="不使用缓存"></a>不使用缓存</h3><p>例如我们在开发提问系统，提问访问量非常大，每秒一万次访问。</p>
+<p>最开始的伪代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">QuestionByID</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">  row = SQLQuery(<span class="string">&quot;SELECT title, describe FROM question WHERE id = ? LIMIT 1&quot;</span>)</span><br><span class="line">  <span class="keyword">if</span> row == <span class="literal">null</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      type: <span class="string">&quot;fail&quot;</span>,</span><br><span class="line">      msg : <span class="string">&quot;数据不存在&quot;</span>，</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    title: row.title,</span><br><span class="line">    describe: row.describe,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上线后发现数据库压力过大，服务延迟非常高，</p>
+<h2 id="使用缓存"><a href="#使用缓存" class="headerlink" title="使用缓存"></a>使用缓存</h2><p>为了解决次问题，使用缓存减少频繁的 sql 操作。</p>
+<p>缓存设计方式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">第一个请求：查询缓存 &gt; 缓存不存在 &gt; 查询数据库 &gt; 将数据写入缓存 &gt; 响应数据</span><br><span class="line">第二个请求：查询缓存 &gt; 缓存存在 &gt; 响应数据</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./cache_practice/1-1.png"></p>
+<p>修改后的伪代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">QuestionByID</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">  cacheKey = <span class="string">&quot;question:&quot;</span> + id</span><br><span class="line">  cache = Redis(<span class="string">&quot;HGETALL&quot;</span>, cacheKey, )</span><br><span class="line">  <span class="comment">// 判断缓存是否存在</span></span><br><span class="line">  <span class="keyword">if</span> (cache == nil) &#123;</span><br><span class="line">    <span class="comment">// 查询数据库</span></span><br><span class="line">    row = SQLQuery(<span class="string">&quot;SELECT title, describe FROM question WHERE id = ? LIMIT 1&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> row == <span class="literal">null</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> &#123;</span><br><span class="line">        type: <span class="string">&quot;fail&quot;</span>,</span><br><span class="line">        msg : <span class="string">&quot;数据不存在&quot;</span>，</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 将数据库的数据同步到缓存</span></span><br><span class="line">    Redis(<span class="string">&quot;HSET&quot;</span>, cacheKey, <span class="string">&quot;title&quot;</span>, row.title, <span class="string">&quot;describe&quot;</span>, row.describe, <span class="string">&quot;cache_expire_uinx_seconds&quot;</span>, time.Now().Add(time.Secound*<span class="number">120</span>).Unix()) row.describe)</span><br><span class="line">    <span class="comment">// 响应数据</span></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      title: cache.title,</span><br><span class="line">      describe: cache.describe,</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 响应缓存数据</span></span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    title: cache.title,</span><br><span class="line">    describe: cache.describe,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>redis hash 的 feild 无法设置过期时间，可以通过定时任务使用 hscan 去检测 cache_expire_uinx_seconds 来实现 field 过期时间</p>
+</blockquote>
+<h3 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h3><p>重新发布后，数据库压力大幅度减少。但部分新问题发布后还是会出现几秒短暂的sql连接数暴增。</p>
+<p>原因是一些粉丝量很大的用户发布提问后大量用户涌入，在缓存还没来得及同步时出现大量sql查询。这种情况叫<strong>缓存击穿</strong></p>
+<p>为了解决这种情况，需要使用分布式互斥锁避免出现一个提问出现大量同步缓存操作。</p>
+<blockquote>
+<p>分布式互斥锁需要保证上锁和解锁都是原子性，在解锁时不要意外的解锁了其他线程/协程/机器上的锁和处理解锁时锁过期。本文不深入互斥锁。<a target="_blank" rel="noopener" href="https://github.com/search?q=user:nimoc+%E4%BA%92%E6%96%A5%E9%94%81">互斥锁文章</a></p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">第一个请求：查询缓存 &gt; 缓存不存在 &gt; 尝试上锁 &gt; 上锁成功 &gt; 查询数据库 &gt; 将数据写入缓存 &gt; 响应数据</span><br><span class="line">第一个请求：查询缓存 &gt; 缓存不存在 &gt; 尝试上锁 &gt; 上锁失败 &gt; 延迟1秒后重试查询</span><br><span class="line">第二个请求：查询缓存 &gt; 缓存存在 &gt; 响应数据</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/./cache_practice/1-2.png"></p>
+<p>修改后的伪代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">QuestionByID</span>(<span class="params">id string, retry int</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// （可暂时跳过这一段 if 代码）为防止意外多次重试出现死循环，增加中断条件</span></span><br><span class="line">  <span class="keyword">if</span> (retry &gt; <span class="number">2</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      type: <span class="string">&quot;fail&quot;</span>,</span><br><span class="line">      message: <span class="string">&quot;提问获取失败，请重试。&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  cacheKey = <span class="string">&quot;question:&quot;</span> + id cache = Redis(<span class="string">&quot;HGETALL&quot;</span>, cacheKey, )</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (cache == nil) &#123;</span><br><span class="line">    <span class="comment">// 互斥锁</span></span><br><span class="line">    lockKey = <span class="string">&quot;question_sync_cache:&quot;</span> + id lockSuccess,</span><br><span class="line">    Unlock = Lock(lockKey, &#123;</span><br><span class="line">      ExpireSeconds: <span class="number">3</span></span><br><span class="line">    &#125;) <span class="keyword">if</span> (lockSuccess == <span class="literal">false</span>) &#123;</span><br><span class="line">      <span class="comment">// 锁被占用时等待1秒</span></span><br><span class="line">      SleepSeconds(<span class="number">1</span>)</span><br><span class="line">      <span class="comment">// 再次调用 QuestionByID 重试查询，因为根据测试结果1秒的时间足够同步缓存完成。</span></span><br><span class="line">      <span class="keyword">return</span> QuestionByID(id, retry + <span class="number">1</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    row = SQLQuery(<span class="string">&quot;SELECT title, describe FROM question WHERE id = ? LIMIT 1&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> row == <span class="literal">null</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> &#123;</span><br><span class="line">        type: <span class="string">&quot;fail&quot;</span>,</span><br><span class="line">        msg : <span class="string">&quot;数据不存在&quot;</span>，</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    Redis(<span class="string">&quot;HSET&quot;</span>, cacheKey, <span class="string">&quot;title&quot;</span>, row.title, <span class="string">&quot;describe&quot;</span>, row.describe, <span class="string">&quot;cache_expire_uinx_seconds&quot;</span>, time.Now().Add(time.Secound*<span class="number">120</span>).Unix())</span><br><span class="line">    unlockSuccess = Unlock()</span><br><span class="line">    <span class="comment">// 解锁失败</span></span><br><span class="line">    <span class="keyword">if</span> (unlockSuccess == <span class="literal">false</span>) &#123;</span><br><span class="line">      <span class="comment">// 再次调用 QuestionByID 重试查询</span></span><br><span class="line">      <span class="keyword">return</span> QuestionByID(id, retry + <span class="number">1</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      title: cache.title,</span><br><span class="line">      describe: cache.describe,</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    title: cache.title,</span><br><span class="line">    describe: cache.describe,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>当有新提问被大量并发访问时，只有一个请求会进入查询 SQL的逻辑，其他请求会等待一秒后重试。如果第一个请求因为各种原因导致没有能成功更新缓存，还会有其他请求重新加锁并更新缓存。</p>
+<p>在一种极端情况下：有出现大量的请求，成功上锁的那一个请求在上锁后因为各种原因线程中断了，导致没有解锁。此时会出现3秒内所有 QuestionByID 都不能响应数据。但这种情况出现的几率非常小，可根据业务场景来判断是否可以忽略。</p>
+<h3 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h3><p>发布运行一段时间后一切正常，偶尔有一天发现当粉丝量很大的用户发布提问后又理解删除提问。发布提问时候推送消息已经推送到很多用户的手机中，用户阅读消息并点击访问提问。会进入如下流程：</p>
+<p><img src="/./cache_practice/1-3.png?=3"></p>
+<p>如图所示，所有的用户请求都进入了红色框线路。即使在同步缓存时使用互斥锁去减少数据库压力。在第一个上锁成功的用户没查到数据并解锁后还会有新的用户上锁&gt;查询数据库-&gt;响应无数据。这就导致了<strong>缓存穿透</strong></p>
+<blockquote>
+<p>数据不存在原因可能是正常删除，也可能是意外删除，也可能是恶意攻击。</p>
+</blockquote>
+<p>为了解决缓存穿透，需要在查询到不存在的数据时在缓存中标记数据不存在，以避免缓存穿透。</p>
+<p><img src="/./cache_practice/1-4.png"></p>
+<p><img src="/./cache_practice/1-5.png"></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">QuestionByID</span>(<span class="params">id string, retry int</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// （可暂时跳过这一段 if 代码）为防止意外多次重试出现死循环，增加中断条件</span></span><br><span class="line">  <span class="keyword">if</span> (retry &gt; <span class="number">2</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      type: <span class="string">&quot;fail&quot;</span>,</span><br><span class="line">      message: <span class="string">&quot;数据获取失败，请重试。&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  cacheKey = <span class="string">&quot;question:&quot;</span> + id cache = Redis(<span class="string">&quot;HGETALL&quot;</span>, cacheKey, )</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (cache == nil) &#123;</span><br><span class="line">    <span class="comment">// 在缓存中查询是否是无效数据</span></span><br><span class="line">    invalid = RedisCommand(<span class="string">&quot;HGET&quot;</span>, <span class="string">&quot;question_invalid&quot;</span>, id)</span><br><span class="line">    <span class="keyword">if</span> (invalid) &#123;</span><br><span class="line">      <span class="keyword">return</span> &#123;</span><br><span class="line">        type: <span class="string">&quot;fail&quot;</span>,</span><br><span class="line">        msg : <span class="string">&quot;数据不存在&quot;</span>，</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    lockKey = <span class="string">&quot;question_sync_cache:&quot;</span> + id lockSuccess,</span><br><span class="line">    Unlock = Lock(lockKey, &#123;</span><br><span class="line">      ExpireSeconds: <span class="number">3</span></span><br><span class="line">    &#125;) <span class="keyword">if</span> (lockSuccess == <span class="literal">false</span>) &#123;</span><br><span class="line">      SleepSeconds(<span class="number">1</span>)</span><br><span class="line">      <span class="keyword">return</span> QuestionByID(id, retry + <span class="number">1</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    row = SQLQuery(<span class="string">&quot;SELECT title, describe FROM question WHERE id = ? LIMIT 1&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> row == <span class="literal">null</span> &#123;</span><br><span class="line">      <span class="comment">// 标记无效数据</span></span><br><span class="line">      invalid = RedisCommand(<span class="string">&quot;HSET&quot;</span>, <span class="string">&quot;question_invalid&quot;</span>, id, time.Now().Add(time.Secound*<span class="number">120</span>).Unix())</span><br><span class="line">      <span class="comment">// 值设为无效标记超时时间，便于 HSCAN 清除数据</span></span><br><span class="line">      <span class="keyword">return</span> &#123;</span><br><span class="line">        type: <span class="string">&quot;fail&quot;</span>,</span><br><span class="line">        msg : <span class="string">&quot;数据不存在&quot;</span>，</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    Redis(<span class="string">&quot;HSET&quot;</span>, cacheKey, <span class="string">&quot;title&quot;</span>, row.title, <span class="string">&quot;describe&quot;</span>, row.describe, <span class="string">&quot;cache_expire_uinx_seconds&quot;</span>, time.Now().Add(time.Secound*<span class="number">120</span>).Unix())</span><br><span class="line">    unlockSuccess = Unlock()</span><br><span class="line">    <span class="keyword">if</span> (unlockSuccess == <span class="literal">false</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> QuestionByID(id, retry + <span class="number">1</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      title: cache.title,</span><br><span class="line">      describe: cache.describe,</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    title: cache.title,</span><br><span class="line">    describe: cache.describe,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当数据量非常大时 hash 存储无效id会导致缓存数据过大，可以使用<a target="_blank" rel="noopener" href="https://www.dogedoge.com/results?q=%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8">布隆过滤器</a> 降低缓存大小。可以根据实际情况选择合适的方式。</p>
+<h3 id="删除旧数据的缓存"><a href="#删除旧数据的缓存" class="headerlink" title="删除旧数据的缓存"></a>删除旧数据的缓存</h3><p><strong>带着以下思路去思考数据一致性和并发问题</strong></p>
+<ol>
+<li><strong>行间延迟</strong>：每个操作之间都能出现非常大的延迟（需假设每行代码之间都有 sleep 操作）</li>
+<li><strong>原子性</strong>：确认哪些操作不是原子性，考虑不是原子性会导致什么问题。</li>
+<li><strong>并发</strong>：考虑会有其他线程/协程/机器同一时间对数据进行修改</li>
+</ol>
+<p><img src="/./cache_practice/1-6.png"></p>
+<hr>
+<p><img src="/./cache_practice/1-7.png"></p>
+<hr>
+<p><img src="/./cache_practice/1-8.png"></p>
+<hr>
+<p><img src="/./cache_practice/1-9.png"></p>
+<hr>
+<p>因为缓存存储系统和持久化数据存储系统都是不同的服务提供的（mysql redis）所以无法保证原子性，无法保证原子性就无法保证数据一致。只能通过各种补偿机制保证数据最终一致性，在极端情况下依然无法保证数据一致性。但好在很多场景并不需要实现绝对的数据一致性，允许极端情况下出现短暂的数据不一致。</p>
+</section>
+    <script src="https://utteranc.es/client.js"
+            repo="nimoc/blog"
+            issue-number=""
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#后端" >
+    <span class="tag-code">后端</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/concurrency_methodology/">
+        <span class="nav-arrow">← </span>
+        
+          解决并发方法论
+        
+      </a>
+    
+    
+  </div>
+
+    <!-- NAV END -->
+
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- No Comment -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">目录</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#%E7%BC%93%E5%AD%98%E5%AE%9E%E8%B7%B5"><span class="toc-nav-text">缓存实践</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E8%AF%BB%E5%A4%9A%E5%86%99%E5%B0%91"><span class="toc-nav-text">读多写少</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E4%B8%8D%E4%BD%BF%E7%94%A8%E7%BC%93%E5%AD%98"><span class="toc-nav-text">不使用缓存</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E4%BD%BF%E7%94%A8%E7%BC%93%E5%AD%98"><span class="toc-nav-text">使用缓存</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF"><span class="toc-nav-text">缓存击穿</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="toc-nav-text">缓存穿透</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E5%88%A0%E9%99%A4%E6%97%A7%E6%95%B0%E6%8D%AE%E7%9A%84%E7%BC%93%E5%AD%98"><span class="toc-nav-text">删除旧数据的缓存</span></a></li></ol></li></ol></li></ol>
+    
+  </div>
+</aside>
+
+  
+  <!-- Catalog END -->
+
+</main>
+
+<script>
+  (function () {
+    var url = 'https://nimoc.io/cache_practice/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+
+  })();
+</script>
+
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2021 | powered by <a href="https://nimoc.io" target="_blank">nimoc.io</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+
+<script src="/js/script.js"></script>
+
+
+  </body>
+</html>

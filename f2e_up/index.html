@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  
+    <link rel="shortcut icon" type="image/ico" href="https://avatars.githubusercontent.com/u/3949015?s=460&amp;v=4"/>
+  
+  <title>
+    
+      Web 前端的困局与突破 | nimoc.io 技术博客
+    
+  </title>
+  
+    
+  <meta name="description" content="樱花博客，一个记录个人成长的地方。">
+  
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo" style="border-radius:100%;background-image:url(https://avatars.githubusercontent.com/u/3949015?s=460&v=4);"></div>
+      <span>nimoc.io 技术博客</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">主页</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">标签</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">时间线</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">开源项目</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">关于我</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">主页</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">标签</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">时间线</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">开源项目</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">关于我</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>Web 前端的困局与突破</h2>
+  <p class="post-date">2020-05-11</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h1 id="Web-前端的困局与突破"><a href="#Web-前端的困局与突破" class="headerlink" title="Web 前端的困局与突破"></a>Web 前端的困局与突破</h1><p><a href="https://nimoc.io/notice/index.html"><img src="http://nimoc.io/notice/index.svg" alt="nimoc.io"></a></p>
+<blockquote>
+<p>每个Web前端都会不时思考自身对于团队的价值和在团队中的话语权,这类思考背后存在困局和突破</p>
+</blockquote>
+<h2 id="困局"><a href="#困局" class="headerlink" title="困局"></a>困局</h2><p>困局必然是负能量,耐下心来了解困局后再看突破.</p>
+<h3 id="价值"><a href="#价值" class="headerlink" title="价值"></a>价值</h3><p>在团队中前端的职责是实现原型和设计工作中的客户端部分,是<strong>实现者</strong>.很少参与功能/程序设计.极少数业务场景下是重前端的.需要前端实现可视化编辑组件(可视化创建页面/Web编辑器).这样的团队少之又少.大部分情况下前端的职责就只是实现产品设计.</p>
+<p>前端巧妙的程序设计,优秀的页面大部分情况下与商业逻辑是无关的.技术是依附于商业生存的.在客观的管理者视角看,前端是有价值的,但在技术团队中前端的价值不重要.只要把活干好了,别出错就可以了.也不需要维护管理公司命脉数据库.</p>
+<blockquote>
+<p>价值的意义:收入,市场竞争力都是基于价值的</p>
+</blockquote>
+<h3 id="话语权"><a href="#话语权" class="headerlink" title="话语权"></a>话语权</h3><p>从项目管理的角度看:</p>
+<table>
+<thead>
+<tr>
+<th>岗位</th>
+<th>职责</th>
+<th>分工</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>产品经理</td>
+<td>基于市场需求表达产品界面和功能逻辑</td>
+<td>需求与业务逻辑设计</td>
+</tr>
+<tr>
+<td>UI设计</td>
+<td>基于产品表达的界面进行界面设计</td>
+<td>基于原型UI交互设计</td>
+</tr>
+<tr>
+<td>前端</td>
+<td>基于产品原型与UI设计完成客户端的实现</td>
+<td>实现客户端</td>
+</tr>
+<tr>
+<td>后端</td>
+<td>数据结构与程序的设计和实现</td>
+<td>程序设计与实现</td>
+</tr>
+</tbody></table>
+<p>产品同事对项目有绝对的话语权,设计同事是产品同事的下游,是基于产品同事的要求完成界面设计工作.</p>
+<p>后端同事看似也是实现者,实则是<strong>后端是程序设计者</strong></p>
+<p>当前端遇到上下游意见相左时,因为前端的分工是实现者,所以往往前端是没有话语权的.</p>
+<p>有些人常说的用户体验,实际上这个活是UI设计干的活,前端只需要做到快速的基于设计完成客户端开发.并保证客户端的加载性能.</p>
+<p>高流量多信息聚合的页面需要基于前端的专业意见去协作开发,不过这种情况太少了</p>
+<blockquote>
+<p>话语权的意义: 决定项目中与前端相关的问题能用你的专业想法解决,而不是由”外行”解决.</p>
+</blockquote>
+<h3 id="恶劣的的工作环境"><a href="#恶劣的的工作环境" class="headerlink" title="恶劣的的工作环境"></a>恶劣的的工作环境</h3><ol>
+<li>没有产品原型</li>
+<li>没有设计稿</li>
+<li>没有后端接口文档</li>
+<li>联调阶段扯皮</li>
+</ol>
+<p>以上问题在很多小团队出现的特别频繁,严重影响了工作进度.</p>
+<p>前端是实现者,要基于设计去实现,基于实现去”消费”接口.</p>
+<p>3 4 问题是出现的最频繁的,扯皮无止境,不停的内耗.</p>
+<h3 id="天花板"><a href="#天花板" class="headerlink" title="天花板"></a>天花板</h3><p>随着三大剑客(react vue ng)的流行,基于成熟的组件库能极大的提高前端开发效率.大部分团队不需要再造适合公司业务场景的组件轮子.从业两三年就可以达到日常90%的页面开发工作是”<strong>机械化</strong>“的.大量的时间反而是解决上节说到的恶劣的工作环境</p>
+<p>前端工程管理,前端开发流程的制定,前端架构设计这些都是由前端话事人去设计和执行的.在技能水平+经验+对团队的了解程度+话语权上都应该由前端话事人去解决.大部分前端只需要遵循团队流程规范即可.</p>
+<h3 id="JavaScript与Node"><a href="#JavaScript与Node" class="headerlink" title="JavaScript与Node"></a>JavaScript与Node</h3><blockquote>
+<p>JavaScript 是困局这一点是很多人没有意识到,也不认同的.</p>
+</blockquote>
+<p>JavaScript 过于灵活宽松让代码不易于维护.动态语言在大型项目会降低可维护性. TypeScript 的类型系统需要对JavaScript 妥协.始终让前端在语言层面无法使用类型系统方便的写出分层明确和易于维护的代码.</p>
+<p>这点不深入讨论,了解过其他强类型系统语言再来使用 TypeScript 写非常严谨容错率低的代码自然就能明白.</p>
+<p>很多团队希望使用 Node 去提升自己的话语权,殊不知必须 Node 与公司所遇到的场景和问题契合才能解决问题.</p>
+<p>不要把自己限死在 JavaScript ,前端掌握当前团队的后端语言不是啥坏事.不是每个项目都需要要SSR.都需要使用Node进行前后端分离.</p>
+<h2 id="突破"><a href="#突破" class="headerlink" title="突破"></a>突破</h2><p>困局有:</p>
+<ol>
+<li>价值</li>
+<li>话语权</li>
+<li>恶劣的工作环境</li>
+<li>天花板</li>
+<li>JavaScript</li>
+</ol>
+<p>一句话就能说明白如何突破:</p>
+<p><strong>不要把自己限制在客户端的实现者,让自己参与产品程序设计,精前端,懂业务,懂后端.</strong></p>
+<h3 id="恶劣的工作环境"><a href="#恶劣的工作环境" class="headerlink" title="恶劣的工作环境"></a>恶劣的工作环境</h3><p>当<strong>没有产品原型和设计</strong>的情况下,正确更多的时间,去了解产品需求,使用前端界面作为”原型”.完成部分产品没时间或者认为不重要的产品设计工作.没有设计的情况下基于成熟的UI组件,antd element 完成表单类的开发,一些交互设计自己做主设计交互细节并实现.没有设计的情况下大概率你能做主.</p>
+<p>当后端<strong>给不到接口</strong>时,在前端角度维护接口文档,通过接口更深入的理解程序设计.有理有据的要求后端同时配合你给到接口让你使用,因为客户端是接口消费方.如果后端给不到接口就自行模拟接口,再联调的时候再修改也无妨,这样单前端定义接口的过程就是在进行程序设计.基于客观接口进行联调,避免主观争论.</p>
+<p>善于<strong>使用错误追踪系统</strong>记录错误,例如 Sentry . 有理有据的去排查问题,定位问题,给出问题修复报告.防止莫名其妙背锅.</p>
+<blockquote>
+<p>愿你不遇到恶劣的工作环境,遇到相互配合的好同事</p>
+</blockquote>
+<h3 id="天花板与JavaScript"><a href="#天花板与JavaScript" class="headerlink" title="天花板与JavaScript"></a>天花板与JavaScript</h3><p>在前端角度不要局限于 Web 前端,在吃透当前工作环境时去了解其他客户端技术,比如各类小程序, IOS Android.</p>
+<p>Swift Kotlin Java 都是不错的语言,了解他们后再回头写 TypeScript 会对编程有新的认识和理解.</p>
+<p>不要局限于前端,在项目中了解目前团队的后端语言和后端知识.参与后端提供的接口中数据类型的定义,(类似 TypeScript 中的 interface).了解后端语言(PHP就算了),对项目后端的程序设计有足够了解.必要时尝试参与后端开发,先完成一些简单不重要的后端工作.</p>
+<p>大部分情况下足够努力的前端做个三五年很容易在小团队做到天花板.不考虑换工作的情况下,去向全栈发展是个很好的选择.只有掌握了程序设计才能掌握话语权.</p>
+<p>现在很多人错误的理解了全栈,认为会 node 写个编译工具就是全栈,不要局限于掌握的后端语言是 Node . 使用 Node 能免去学习一门新语言的好处没有那么重要,反而会将你局限在 JavaScript.</p>
+<p><strong>了解一门强类型语言,了解各种后端技术.了解其他前端领域.</strong></p>
+<h3 id="价值与话语权"><a href="#价值与话语权" class="headerlink" title="价值与话语权"></a>价值与话语权</h3><p>吃透目前工作环境所需要使用的前端技术后,由<strong>实现者变为程序设计者</strong>不要将自己局限于”页面仔”.去理解了解业务才能提升自身价值.</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>始于前端,不局限于前端.**不要把自己限制在客户端的实现者,让自己参与产品程序设计,精前端,懂业务,懂后端.</p>
+<p>原文地址 <a target="_blank" rel="noopener" href="https://github.com/nimoc/blog/issues/35">https://github.com/nimoc/blog/issues/35</a> (原文保持持续更新和更多的评论)</p>
+</section>
+    <script src="https://utteranc.es/client.js"
+            repo="nimoc/blog"
+            issue-number=""
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#前端" >
+    <span class="tag-code">前端</span>
+  </a>
+
+  <a href="/tags#职业思考建议" >
+    <span class="tag-code">职业思考建议</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+    
+      <a class="nav-right" href="/concurrency_methodology/">
+        
+          解决并发方法论
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- No Comment -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">目录</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#Web-%E5%89%8D%E7%AB%AF%E7%9A%84%E5%9B%B0%E5%B1%80%E4%B8%8E%E7%AA%81%E7%A0%B4"><span class="toc-nav-text">Web 前端的困局与突破</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E5%9B%B0%E5%B1%80"><span class="toc-nav-text">困局</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E4%BB%B7%E5%80%BC"><span class="toc-nav-text">价值</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E8%AF%9D%E8%AF%AD%E6%9D%83"><span class="toc-nav-text">话语权</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E6%81%B6%E5%8A%A3%E7%9A%84%E7%9A%84%E5%B7%A5%E4%BD%9C%E7%8E%AF%E5%A2%83"><span class="toc-nav-text">恶劣的的工作环境</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E5%A4%A9%E8%8A%B1%E6%9D%BF"><span class="toc-nav-text">天花板</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#JavaScript%E4%B8%8ENode"><span class="toc-nav-text">JavaScript与Node</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E7%AA%81%E7%A0%B4"><span class="toc-nav-text">突破</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E6%81%B6%E5%8A%A3%E7%9A%84%E5%B7%A5%E4%BD%9C%E7%8E%AF%E5%A2%83"><span class="toc-nav-text">恶劣的工作环境</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E5%A4%A9%E8%8A%B1%E6%9D%BF%E4%B8%8EJavaScript"><span class="toc-nav-text">天花板与JavaScript</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E4%BB%B7%E5%80%BC%E4%B8%8E%E8%AF%9D%E8%AF%AD%E6%9D%83"><span class="toc-nav-text">价值与话语权</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-nav-text">总结</span></a></li></ol></li></ol>
+    
+  </div>
+</aside>
+
+  
+  <!-- Catalog END -->
+
+</main>
+
+<script>
+  (function () {
+    var url = 'https://nimoc.io/f2e_up/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+
+  })();
+</script>
+
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2021 | powered by <a href="https://nimoc.io" target="_blank">nimoc.io</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+
+<script src="/js/script.js"></script>
+
+
+  </body>
+</html>

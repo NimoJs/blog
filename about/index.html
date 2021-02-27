@@ -8,7 +8,7 @@
   
   <title>
     
-      nimoc.io 技术博客
+      About | nimoc.io 技术博客
     
   </title>
   
@@ -70,7 +70,7 @@
       
         <li class="list-item">
           
-            <a href="/" class="item-link active">主页</a>
+            <a href="/" class="item-link">主页</a>
           
         </li>
       
@@ -109,7 +109,7 @@
         
           <li class="menu-item">
             
-              <a href="/" class="menu-link mobile-active">主页</a>
+              <a href="/" class="menu-link">主页</a>
             
           </li>
         
@@ -142,7 +142,7 @@
   </div>
 </header>
 
-    <div id="about-banner" style="height:250px;background-image: url(https://pic4.zhimg.com/80/v2-4df3b54a4f98886029524274a9cbbe35_r.jpg)"></div>
+    <div id="about-banner" style="background-image: url(https://pic4.zhimg.com/80/v2-4df3b54a4f98886029524274a9cbbe35_r.jpg)"></div>
 <div class="author">
   <div class="head">
     <img src="https://avatars.githubusercontent.com/u/3949015?s=460&v=4" />
@@ -174,97 +174,20 @@
     
   </section>
 </div>
-<main class="app-body">
-  
-    <article class="article-card">
-      <h2 class="article-head">
-        <a href="/cache_practice/">缓存实践</a>
-      </h2>
-      <p class="article-date">February 27, 2021</p>
-      
-        
-  <a href="/tags#后端" >
-    <span class="tag-code">后端</span>
-  </a>
 
-      
-      <div class="article-summary">
-        
-          缓存实践
-本文将完整介绍以下知识点：
-
-读多写少
-读多写多
-缓存与数据库的一致性
-
-读多写少不使用缓存例如我们在开发提问系统，提问访问量非常大，每秒一万次访问。
-最开始的伪代码如下：
-12345678910111213function QuestionByID(id) &#123;  row ...
-        
-      </div>
-      <a class="more" href="/cache_practice/">阅读全部内容</a>
-    </article>
-  
-    <article class="article-card">
-      <h2 class="article-head">
-        <a href="/concurrency_methodology/">解决并发方法论</a>
-      </h2>
-      <p class="article-date">February 27, 2021</p>
-      
-        
-  <a href="/tags#后端" >
-    <span class="tag-code">后端</span>
-  </a>
-
-  <a href="/tags#并发" >
-    <span class="tag-code">并发</span>
-  </a>
-
-      
-      <div class="article-summary">
-        
-          解决并发方法论
-首先记住以下几点
-
-原子性：确认哪些操作不是原子性，考虑不是原子性会导致什么问题。并考虑所有操作都可能失败或进程/协程中断
-操作延迟：代码中每个操作的执行时间都是不确定的。每一行之间都可能出现非常大的延迟，需假设每行代码之间都有 sleep 操作。网络io中客户端收到消息的时 ...
-        
-      </div>
-      <a class="more" href="/concurrency_methodology/">阅读全部内容</a>
-    </article>
-  
-    <article class="article-card">
-      <h2 class="article-head">
-        <a href="/f2e_up/">Web 前端的困局与突破</a>
-      </h2>
-      <p class="article-date">May 11, 2020</p>
-      
-        
-  <a href="/tags#前端" >
-    <span class="tag-code">前端</span>
-  </a>
-
-  <a href="/tags#职业思考建议" >
-    <span class="tag-code">职业思考建议</span>
-  </a>
-
-      
-      <div class="article-summary">
-        
-          Web 前端的困局与突破
-
-每个Web前端都会不时思考自身对于团队的价值和在团队中的话语权,这类思考背后存在困局和突破
-
-困局困局必然是负能量,耐下心来了解困局后再看突破.
-价值在团队中前端的职责是实现原型和设计工作中的客户端部分,是实现者.很少参与功能/程序设计.极少数业务场景下是重前端的 ...
-        
-      </div>
-      <a class="more" href="/f2e_up/">阅读全部内容</a>
-    </article>
-  
-
-  
-</main>
+<script>
+  (function () {
+    $('.header').removeClass('fixed-header')
+    var windowH = $(window).height();
+    var author = $('.author')
+    var bodyH = author.offset().top + author[0].offsetHeight + 71;
+    if (bodyH < windowH) {
+      author.css({
+        'margin-bottom': windowH - bodyH
+      })
+    }
+  })();
+</script>
 
     <div class="scroll-top">
   <span class="arrow-icon"></span>
