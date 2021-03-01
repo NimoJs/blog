@@ -222,15 +222,9 @@
       <div class="article-summary">
         
           缓存实践
-本文将完整介绍以下知识点：
-
-读多写少
-读多写多
-缓存与数据库的一致性
-
-读多写少不使用缓存例如我们在开发提问系统，提问访问量非常大，每秒一万次访问。
+Cache Aside（边路缓存）不使用缓存例如我们在开发提问系统，提问访问量非常大，每秒一万次访问。
 最开始的伪代码如下：
-12345678910111213function QuestionByID(id) &#123;  row ...
+12345678910111213function QuestionByID(id) &#123;  row = SQLQuery(&quot;SELECT ...
         
       </div>
       <a class="more" href="/cache_practice/">阅读全部内容</a>
