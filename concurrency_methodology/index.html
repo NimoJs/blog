@@ -179,7 +179,7 @@
 <p><img src="/./concurrency_methodology/1-4.png"></p>
 <p>在上锁时设置密码，在解锁时验证密码以避免删除了别人的锁</p>
 <p><img src="/./concurrency_methodology/1-5.png"></p>
-<h2 id="sql-红包池"><a href="#sql-红包池" class="headerlink" title="sql 红包池"></a>sql 红包池</h2><p>考虑如下业务场景：</p>
+<h2 id="sql红包池"><a href="#sql红包池" class="headerlink" title="sql红包池"></a>sql红包池</h2><p>考虑如下业务场景：</p>
 <p><img src="/./concurrency_methodology/turntable.jpg"></p>
 <p>每访问4次页面（UV）会产生一个微信红包在红包池中，点击立即抽奖时候会查询红包池。</p>
 <p>红包池是基于一张表实现的，表结构如下</p>
@@ -193,8 +193,12 @@
 <p>此处不要使用事务 for update 加锁去操作数据。<br>例如三个用户请求一起进入查询，会全部去尝试给 id:1 上锁，只有一个请求能上锁成功。<br>其余2个请求都会失败。</p>
 <p>采用 <strong>CAS</strong> (Compare And Swap)乐观锁和<strong>数据标记</strong> <code>owner_key</code>来实现。</p>
 <p>伪代码如下</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">luckyDraw</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 正式代码不要将参数写在sql中，要防止依赖注入</span></span><br><span class="line">  ownerKey = uuuid()</span><br><span class="line">  rowsAffected = sql(<span class="string">&quot;UPDATE event_gift_pools SET used=1, owner_key = $&#123;ownerKey&#125;  WHERE event_gift_id = 1 AND used = 0 LIMIT 1&quot;</span>)</span><br><span class="line">  <span class="keyword">if</span> (rowsAffected == <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="comment">// 如果不支持 rowsAffected 可以基于 ownerKey 再查询一次判断修改是否成功</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;谢谢惠顾&quot;</span></span><br><span class="line">  &#125;</span><br><span class="line">  data = sql(<span class="string">&quot;SELECT * FROM event_gift_pools WHERE ownerKey = $&#123;ownerKey&#125; AND used=1 LIMIT 1&quot;</span>)</span><br><span class="line">  <span class="keyword">return</span> <span class="string">&quot;中奖了，发放&quot;</span> + data.amount + <span class="string">&quot;元！&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">luckyDraw</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 正式代码不要将参数写在sql中，要防止依赖注入</span></span><br><span class="line">  ownerKey = uuid()</span><br><span class="line">  rowsAffected = sql(<span class="string">&quot;UPDATE event_gift_pools SET used=1, owner_key = $&#123;ownerKey&#125;  WHERE event_gift_id = 1 AND used = 0 LIMIT 1&quot;</span>)</span><br><span class="line">  <span class="keyword">if</span> (rowsAffected == <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="comment">// 如果不支持 rowsAffected 可以基于 ownerKey 再查询一次判断修改是否成功</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;谢谢惠顾&quot;</span></span><br><span class="line">  &#125;</span><br><span class="line">  data = sql(<span class="string">&quot;SELECT * FROM event_gift_pools WHERE ownerKey = $&#123;ownerKey&#125; AND used=1 LIMIT 1&quot;</span>)</span><br><span class="line">  <span class="keyword">return</span> <span class="string">&quot;中奖了，发放&quot;</span> + data.amount + <span class="string">&quot;元！&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<p>SQL UPDATE 是原子性操作，所以极限并发情况下，一万个请求在一秒内写入DB，只有3个请求会写入成功，其他请求均反馈 rowsAffected = 0。</p>
+<blockquote>
+<p>如果加上 order by 就能在sql中模拟栈和队列。</p>
+</blockquote>
 <p>TODO:解锁失败后锁回滚，心跳续命锁，etcd分布式锁</p>
 <p>原文地址 <a target="_blank" rel="noopener" href="https://github.com/nimoc/blog/issues/42">https://github.com/nimoc/blog/issues/42</a> (原文持续更新)</p>
 </section>
@@ -259,7 +263,7 @@
   <div class="toc-main">
     <strong class="toc-title">目录</strong>
     
-      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#%E8%A7%A3%E5%86%B3%E5%B9%B6%E5%8F%91%E6%96%B9%E6%B3%95%E8%AE%BA"><span class="toc-nav-text">解决并发方法论</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E4%BA%92%E6%96%A5%E9%94%81"><span class="toc-nav-text">互斥锁</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#sql-%E7%BA%A2%E5%8C%85%E6%B1%A0"><span class="toc-nav-text">sql 红包池</span></a></li></ol></li></ol>
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#%E8%A7%A3%E5%86%B3%E5%B9%B6%E5%8F%91%E6%96%B9%E6%B3%95%E8%AE%BA"><span class="toc-nav-text">解决并发方法论</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E4%BA%92%E6%96%A5%E9%94%81"><span class="toc-nav-text">互斥锁</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#sql%E7%BA%A2%E5%8C%85%E6%B1%A0"><span class="toc-nav-text">sql红包池</span></a></li></ol></li></ol>
     
   </div>
 </aside>
