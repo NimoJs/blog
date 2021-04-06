@@ -148,72 +148,104 @@
 </header>
 
     <div id="article-banner">
-  <h2>Timeline</h2>
-  <p class="post-date">时间线</p>
+  <h2></h2>
+  <p class="post-date">2021-04-06</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
 </div>
-<main class="app-body" id="archives">
-  
-  
-  
-    <section class="time-section">
-  <h1 class="section-year">
-    2021
-  </h1>
-  <div class="section-list">
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h1 id="从-sql-出发认识消息队列"><a href="#从-sql-出发认识消息队列" class="headerlink" title="从 sql 出发认识消息队列"></a>从 sql 出发认识消息队列</h1><p>文章思路：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> task (status,body) <span class="keyword">VALUES</span>(<span class="string">&#x27;ready&#x27;</span>, <span class="string">&#x27;...&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p> 发布消息（发布任务）</p>
+<hr>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UPDATE task <span class="keyword">SET</span> status <span class="operator">=</span> unacked, processor_id <span class="operator">=</span> $processor_id <span class="keyword">WHERE</span> status <span class="operator">=</span> ready</span><br></pre></td></tr></table></figure>
+
+<p>配合 <code>affected</code> 并发安全的标记数据</p>
+<hr>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> id, body <span class="keyword">FROM</span> task <span class="keyword">WHERE</span> status <span class="operator">=</span> unacked processor_id <span class="operator">=</span> $processor_id</span><br><span class="line">````</span><br><span class="line"></span><br><span class="line">读取标记后的数据</span><br><span class="line"></span><br><span class="line"><span class="comment">---</span></span><br><span class="line"></span><br><span class="line">```<span class="keyword">sql</span></span><br><span class="line">UPDATE task <span class="keyword">SET</span> status <span class="operator">=</span> done, processor_id <span class="operator">=</span> $processor_id <span class="keyword">WHERE</span> status <span class="operator">=</span> ready</span><br></pre></td></tr></table></figure>
+
+<p> 配合 <code>affected</code> 标记数据已处理完毕</p>
+<hr>
+<pre><code class="go">UPDATE task SET status = ready, processor_id = &#39;&#39; WHERE status = unacked AND created_at &lt; $tenMinutesAgo
+</code></pre>
+<p>将十分钟前标记正在处理但未完成的消息（任务）重新标记为待处理。(这里的十分钟可以根据业务情况修改)</p>
+</section>
+    <script src="https://utteranc.es/client.js"
+            repo="nimoc/blog"
+            issue-number=""
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <!-- Tags START -->
     
+    <!-- Tags END -->
+    <!-- NAV START -->
     
-      <div class="section-list-item">
-        <a href="/mq/" class="archive-title"></a>
-        <p class="archive-date">04-06</p>
-      </div>
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
     
-      <div class="section-list-item">
-        <a href="/how_why_monitor_logs/" class="archive-title">代码中的监控日志</a>
-        <p class="archive-date">02-28</p>
-      </div>
+      <a class="nav-left" href="/how_why_monitor_logs/">
+        <span class="nav-arrow">← </span>
+        
+          代码中的监控日志
+        
+      </a>
     
-      <div class="section-list-item">
-        <a href="/cache_practice/" class="archive-title">Redis实践</a>
-        <p class="archive-date">02-27</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/concurrency_methodology/" class="archive-title">解决并发方法论</a>
-        <p class="archive-date">02-27</p>
-      </div>
     
   </div>
-</section>
+
+    <!-- NAV END -->
+
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- No Comment -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
   
-    <section class="time-section">
-  <h1 class="section-year">
-    2020
-  </h1>
-  <div class="section-list">
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">目录</strong>
     
-    
-      <div class="section-list-item">
-        <a href="/f2e_up/" class="archive-title">Web 前端的困局与突破</a>
-        <p class="archive-date">05-11</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/ts_go_generics/" class="archive-title">TypeScript 中 松散的类型当做药品</a>
-        <p class="archive-date">04-01</p>
-      </div>
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#%E4%BB%8E-sql-%E5%87%BA%E5%8F%91%E8%AE%A4%E8%AF%86%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97"><span class="toc-nav-text">从 sql 出发认识消息队列</span></a></li></ol>
     
   </div>
-</section>
+</aside>
+
   
+  <!-- Catalog END -->
+
 </main>
 
 <script>
   (function () {
-    var url = 'https://nimoc.io/archives/index.html';
-    $('#article-banner').geopattern(url);
-    $('.header').removeClass('fixed-header');
+    var url = 'https://nimoc.io/mq/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+
   })();
 </script>
+
+
+
+
+
+
 
     <div class="scroll-top">
   <span class="arrow-icon"></span>
