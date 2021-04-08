@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  
+    <link rel="shortcut icon" type="image/ico" href="https://avatars.githubusercontent.com/u/3949015?s=460&amp;v=4"/>
+  
+  <title>
+    
+      原子性 | nimoc.io 技术博客
+    
+  </title>
+  
+  <meta name="keywords" content="原子性,">
+  
+    
+  <meta name="description" content="原子性">
+  
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+  
+  <style >
+      .markdown-content img, .article-summary img{
+          cursor: default;
+      }
+  </style>
+<meta name="generator" content="Hexo 5.4.0"></head>
+<div class="wechat-share">
+  <img src="https://avatars.githubusercontent.com/u/3949015?s=460&v=4" />
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo" style="border-radius:100%;background-image:url(https://avatars.githubusercontent.com/u/3949015?s=460&v=4);"></div>
+      <span>nimoc.io 技术博客</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">主页</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">标签</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">时间线</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">开源项目</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">关于我</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">主页</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">标签</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">时间线</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">开源项目</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">关于我</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>原子性</h2>
+  <p class="post-date">2021-04-08</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h1 id="原子性"><a href="#原子性" class="headerlink" title="原子性"></a>原子性</h1><h2 id="sql中插入数据"><a href="#sql中插入数据" class="headerlink" title="sql中插入数据"></a>sql中插入数据</h2><p>职业生涯中最先遇到的原子性问题一般是SQL INSERT，例如存在如下两张表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">user</span><br><span class="line">id,name</span><br><span class="line"></span><br><span class="line">user_address</span><br><span class="line">user_id,address</span><br></pre></td></tr></table></figure>
+
+<p>创建用户时提交的信息是</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;name&quot;</span>: <span class="string">&quot;nimoc&quot;</span>,</span><br><span class="line">    <span class="string">&quot;address&quot;</span>: <span class="string">&quot;A省B市C区D街道1号&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据提交的数据需要执行2条SQL</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">userID &#x3D; sql(&quot;INSERT INTO user (id, name) VALUES(uuid(), &#39;nimoc&#39;&quot;)</span><br><span class="line">sql(&quot;INSERT INTO user_address (id, name) VALUES(userID, &#39;A省B市C区D街道1号&#39;)&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>如果 <code>INSERT INTO user</code> 执行成功，但 <code>INSERT INTO user_address</code> 执行失败会导致数据不完整（数据不一致）。</p>
+<blockquote>
+<p>宕机，网络异常，2个sql之间有代码报错都会导致第2个sql没有执行或执行失败。</p>
+</blockquote>
+<p>为了确保不出现这种情况，需要让2次插入是原子性操作。通过事务实现即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sql(&quot;BEGIN&quot;)</span><br><span class="line">userID &#x3D; sql(&quot;INSERT INTO user (id, name) VALUES(uuid(), &#39;nimoc&#39;&quot;)</span><br><span class="line">sql(&quot;INSERT INTO user_address (id, name) VALUES(userID, &#39;A省B市C区D街道1号&#39;)&quot;)</span><br><span class="line">sql(&quot;COMMIT&quot;)</span><br></pre></td></tr></table></figure>
+
+<p><strong>sql保证了2个操作要么都执行完成，要么都不执行。符合了原子性，保障了数据一致</strong></p>
+<h2 id="redis-lua-脚本"><a href="#redis-lua-脚本" class="headerlink" title="redis lua 脚本"></a>redis lua 脚本</h2><p>新手常犯的错误是 redis 的 <code>get</code> <code>set</code> 命令一起用。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">uv</span>(<span class="params">userID</span>) </span>&#123;</span><br><span class="line">    visited = redis(<span class="string">&quot;GET&quot;</span>, userID) != nil</span><br><span class="line">    <span class="keyword">if</span> (!visited) &#123;</span><br><span class="line">        <span class="comment">// 标记用户访问过</span></span><br><span class="line">        redis(<span class="string">&quot;SET&quot;</span>, userID, <span class="string">&quot;1&quot;</span>)</span><br><span class="line">        <span class="comment">// 递增 uv </span></span><br><span class="line">        redis(<span class="string">&quot;INCR&quot;</span>, <span class="string">&quot;uv&quot;</span>, <span class="number">1</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">queryUV</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> redis(<span class="string">&quot;GET&quot;</span>, <span class="string">&quot;uv&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码有两个问题：</p>
+<ol>
+<li>SET 之后 不一定能执行 INCR</li>
+<li>A线程执行了 GET 之后，B线程也执行了 GET,他们获取到的结果都是 nil，都执行了 SET和INCR 操作。导致了数据不一致。多产生了一个UV.</li>
+</ol>
+<p>可通过 redis lua 脚本让三个操作变成原子性操作。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">uv</span>(<span class="params">userID</span>) </span>&#123;</span><br><span class="line">    redisEval(<span class="string">`</span></span><br><span class="line"><span class="string">        local visted = redis.call(&quot;GET&quot;, KEYS[1]) != nil</span></span><br><span class="line"><span class="string">        if visted then </span></span><br><span class="line"><span class="string">            redis.call(&quot;SET&quot;, KEYS[1])</span></span><br><span class="line"><span class="string">            redis.call(&quot;INCR&quot;, KEYS[2])</span></span><br><span class="line"><span class="string">            return 1</span></span><br><span class="line"><span class="string">        end</span></span><br><span class="line"><span class="string">        return 0</span></span><br><span class="line"><span class="string">    `</span>, userID, <span class="string">&quot;uv&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">queryUV</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> redis(<span class="string">&quot;GET&quot;</span>, <span class="string">&quot;uv&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>注意 redis lua 脚本的原子性跟 sql 事务原子性不一样，redis lua 脚本内如果命令执行错误，是不会自动回滚的。<br>你需要确保命令语法不要出现错误，这样就能保证命令一定会执行。</p>
+<p><strong>redis lua 脚本保证了3个命令一起执行，消除执行间隙。避免了数据竞争，达到了并发安全。</strong></p>
+<blockquote>
+<p>这里使用lua脚本实现UV的统计只是为了说明原子性。<br>日常工作中 uv 这种场景用 HyperLogLog 或 Sets 实现能同时解决上述两个问题。</p>
+</blockquote>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">uv</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    visted = redis(<span class="string">&quot;SADD&quot;</span>, <span class="string">&quot;visited&quot;</span>, userID) == <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">queryUV</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> redis(<span class="string">&quot;SCARD&quot;</span>, <span class="string">&quot;uv&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="不是每个场景都需要达到原子性"><a href="#不是每个场景都需要达到原子性" class="headerlink" title="不是每个场景都需要达到原子性"></a>不是每个场景都需要达到原子性</h2><p>考虑如下场景：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 检查验证码</span><br><span class="line">function checkCaptcha(captcha, sessionID) &#123;</span><br><span class="line">    key &#x3D; &quot;captcha:&quot; + sessionID</span><br><span class="line">    data &#x3D; redis(&quot;GET&quot;, key)</span><br><span class="line">    redis(&quot;DEL&quot;, key) &#x2F;&#x2F; 读取 captcha 后立即删除，防止恶意穷举</span><br><span class="line">    if (data &#x3D;&#x3D; captcha) &#123;</span><br><span class="line">        return true</span><br><span class="line">    &#125;</span><br><span class="line">    return false</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>GET 和 DEL 不是原子性操作，但是不会造成数据不一致。因为 如果 GET 执行了但是 DEL 没有执行，不会对数据造成任何改动。</p>
+<p>分析不满足原子性时候要明确的写出或说出来如果不满足原子性会造成什么样的BUG。尝试明确的表述出会造成的 BUG 能减少一些非必要的原子性操作。</p>
+<h2 id="不同系统之间的原子性"><a href="#不同系统之间的原子性" class="headerlink" title="不同系统之间的原子性"></a>不同系统之间的原子性</h2><p>考虑如下场景:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sendRedpack</span>(<span class="params">accountID, openid, amount</span>) </span>&#123;</span><br><span class="line">    sql(<span class="string">&quot;begin&quot;</span>)</span><br><span class="line">    <span class="comment">// CAS乐观锁扣除余额</span></span><br><span class="line">    affected = sql(<span class="string">&quot;UPDATE account_finance SET balance = balance - $amount WHERE blance &gt;= $amount AND account_id = $accountID&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> (affected == <span class="number">0</span>) &#123;</span><br><span class="line">        sql(<span class="string">&quot;rollback&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    sql(<span class="string">&quot;INSERT INTO red_pack_record (account_id, openid, amount) VALUES($accountID, $openid, $amount)&quot;</span>) </span><br><span class="line">    ok = httpRequest(<span class="string">&quot;https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack&quot;</span>, &#123;...&#125;)</span><br><span class="line">    <span class="keyword">if</span> (ok == <span class="literal">false</span>) &#123;</span><br><span class="line">        sql(<span class="string">&quot;rollback&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125; </span><br><span class="line">    sql(<span class="string">&quot;commit&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面代码存在如下问题：</p>
+<p>长事务，httpRequest的时间是不可控的，可能会导致事务长时间不结束（事务）。长事务会导致系统能支持的并发量下降。UPDATE 后 account_finance 中  accountID 这一条数据会被锁定。</p>
+<p>虽然 UPDATE 和 INSERT是原子性，但是 httpRequest 与 SQL 操作不是原子性， sql commit 有可能因为网络原因失败。这就导致红包发出去了，但是钱没扣。</p>
+<p>这就出现了<strong>数据不一致</strong>的问题。</p>
+<hr>
+<p>通过本地任务/消息表可以解决不同系统之间的原子性。（分布式事务）</p>
+<p>实现思路是</p>
+<ol>
+<li>httpRequest 之前在事务中在任务表新增一个发放任务，httpRequest在事务 commit 之后执行。</li>
+<li>httpRequest 执行完成后将发放任务标记完成</li>
+<li>如果 httpRequest 没有执行。由 cron 检查未完成的任务，重试发放。</li>
+<li>任务的执行需要是幂等性。微信的发放红包接口通过 order_no 实现了幂等，同一个 order_no 无论请求多少次接口，只会发放一次红包。</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sendRedpack</span>(<span class="params">accountID, openid, amount</span>) </span>&#123;</span><br><span class="line">    sql(<span class="string">&quot;begin&quot;</span>)</span><br><span class="line">    affected = sql(<span class="string">&quot;UPDATE account_finance SET balance = balance - $amount WHERE blance &gt;= $amount AND account_id = $accountID&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> (affected == <span class="number">0</span>) &#123;</span><br><span class="line">        sql(<span class="string">&quot;rollback&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    orderNo = randomString(<span class="number">28</span>)</span><br><span class="line">    sql(<span class="string">&quot;INSERT INTO red_pack_record (order_no, account_id, openid, amount) VALUES($orderNo, $accountID, $openid, $amount)&quot;</span>)</span><br><span class="line">    sendRedPackTaskID = sql(<span class="string">&quot;INSERT INTO send_red_pack_task (order_no, openid, amount, status) VALUES($orderNo, $openid, $amount, &#x27;processing&#x27;)&quot;</span>) </span><br><span class="line">    sql(<span class="string">&quot;commit&quot;</span>)</span><br><span class="line">    ok = httpRequest(<span class="string">&quot;https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack&quot;</span>, &#123;...&#125;)</span><br><span class="line">    <span class="keyword">if</span> (ok) &#123;</span><br><span class="line">        sql(<span class="string">&quot;UPDATE send_red_pack_task SET status= &#x27;done&#x27; WHERE id = $sendRedPackTaskID&quot;</span>)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 处理金额退回，或将红包发放到用户的余额中。</span></span><br><span class="line">        sql(<span class="string">&quot;UPDATE send_red_pack_task SET status= &#x27;cancel&#x27; WHERE id = $sendRedPackTaskID&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 使用定时任务去对未发放的红包进行重试操作</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">cronCompensationSendRedpack</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    oneMinuteAgo = now() - minute()</span><br><span class="line">    ownerKey = uuid()</span><br><span class="line">    data = sql(<span class="string">&quot;SELECT * FROM send_red_pack_task WHERE status = &#x27;processing&#x27; AND created_at &lt; $oneMinuteAgo limit 100&quot;</span>)</span><br><span class="line">    <span class="keyword">for</span> (item <span class="keyword">in</span> data) &#123;</span><br><span class="line">        ok = httpRequest(<span class="string">&quot;https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack&quot;</span>, &#123;item&#125;)</span><br><span class="line">        <span class="keyword">if</span> (ok) &#123;</span><br><span class="line">            sql(<span class="string">&quot;UPDATE send_red_pack_task SET status= &#x27;done&#x27; WHERE id = $item.id&quot;</span>)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 处理金额退回，或将红包发放到用户的余额中。</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>本地任务表的数据是在事务中插入的，确保了 扣钱-&gt;新增发放记录-&gt;新增发放任务 是原子性的。如果 <code> sql(&quot;commit&quot;)</code> 失败了，一分钟后，<code>cronCompensationSendRedpack</code> 会重试未完成的任务。<br>不满足原子性会导致数据不一致，本地任务表配合补偿机制以此达到数据<strong>最终一致性</strong>。</p>
+<p>未完待续…</p>
+</section>
+    <script src="https://utteranc.es/client.js"
+            repo="nimoc/blog"
+            issue-number="44"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#后端" >
+    <span class="tag-code">后端</span>
+  </a>
+
+  <a href="/tags#编程技巧" >
+    <span class="tag-code">编程技巧</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/how_why_monitor_logs/">
+        <span class="nav-arrow">← </span>
+        
+          代码中的监控日志
+        
+      </a>
+    
+    
+      <a class="nav-right" href="/mq/">
+        
+          (untitled)
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- No Comment -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">目录</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#%E5%8E%9F%E5%AD%90%E6%80%A7"><span class="toc-nav-text">原子性</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#sql%E4%B8%AD%E6%8F%92%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="toc-nav-text">sql中插入数据</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#redis-lua-%E8%84%9A%E6%9C%AC"><span class="toc-nav-text">redis lua 脚本</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E4%B8%8D%E6%98%AF%E6%AF%8F%E4%B8%AA%E5%9C%BA%E6%99%AF%E9%83%BD%E9%9C%80%E8%A6%81%E8%BE%BE%E5%88%B0%E5%8E%9F%E5%AD%90%E6%80%A7"><span class="toc-nav-text">不是每个场景都需要达到原子性</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E4%B8%8D%E5%90%8C%E7%B3%BB%E7%BB%9F%E4%B9%8B%E9%97%B4%E7%9A%84%E5%8E%9F%E5%AD%90%E6%80%A7"><span class="toc-nav-text">不同系统之间的原子性</span></a></li></ol></li></ol>
+    
+  </div>
+</aside>
+
+  
+  <!-- Catalog END -->
+
+</main>
+
+<script>
+  (function () {
+    var url = 'https://nimoc.io/atomicity/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+
+  })();
+</script>
+
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2021 | powered by <a href="https://nimoc.io" target="_blank">nimoc.io</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+
+<script src="/js/script.js"></script>
+
+
+  </body>
+</html>
