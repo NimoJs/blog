@@ -1,420 +1,189 @@
 <!DOCTYPE html>
-<html>
-  <head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
-  
-    <link rel="shortcut icon" type="image/ico" href="https://avatars.githubusercontent.com/u/3949015?s=460&amp;v=4"/>
-  
-  <title>
-    
-      nimoc.io 技术博客
-    
-  </title>
-  
-    
-  <meta name="description" content="前端,后端,团队协作,编码心得">
-  
-  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
-  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
-  
-<link rel="stylesheet" href="/css/style.css">
-
-  
-  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
-  
-  
-  
-  
-    <!-- MathJax support START -->
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-          processEscapes: true,
-          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-        }
-      });
-    </script>
-
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for (i=0; i < all.length; i += 1) {
-          all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-      });
-    </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <!-- MathJax support END -->
-  
+<html lang="zh-Hans">
+  <head><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-  
-  <style >
-      .markdown-content img, .article-summary img{
-          cursor: default;
-      }
-  </style>
-<meta name="generator" content="Hexo 5.4.0"></head>
-<div class="wechat-share">
-  <img src="https://avatars.githubusercontent.com/u/3949015?s=460&v=4" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="description" content="前端,后端,团队协作,编码心得"/><link rel="alternate" href="/atom.xml" title="nimo.fun技术博客" type="application/atom+xml">
+<link rel="canonical" href="https://nimo.fun/"/>
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=" />
+
+<script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<script>
+  window.config = {"leancloud":"","toc":"","fancybox":"","pjax":"","latex":""};
+</script>
+<style>
+.header .logo-wrapper .logo {
+font-family: Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, "PingFang SC", Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+letter-spacing:-.02em;
+}
+html .post .post-content img {
+  box-shadow: 0px 0px .2em rgba(111,111,111,.4);
+  border-radius:.5em;
+  margin-left:auto;
+  margin-right:auto;
+  display:block;
+}
+.post .post-header .post-title ,
+.header .site-navbar .menu .menu-item-link,
+.post .post-content h1,
+.mobile-navbar .mobile-header-logo .logo,
+html body {
+ font-family: Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, "PingFang SC", Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+}
+.post .post-content h1 {
+display:none;
+}
+::selection {
+    background: #95beea;
+    color: #111;
+}
+html body {
+  background:white;
+}
+</style>
+
+    <title>nimo.fun技术博客</title>
+  <meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">nimo.fun技术博客</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
 </div>
 
-  <body>
-    <header class="header fixed-header">
-  <div class="header-container">
-    <a class="home-link" href="/">
-      <div class="logo" style="border-radius:100%;background-image:url(https://avatars.githubusercontent.com/u/3949015?s=460&v=4);"></div>
-      <span>nimoc.io 技术博客</span>
-    </a>
-    <ul class="right-list">
-      
-        <li class="list-item">
-          
-            <a href="/" class="item-link active">主页</a>
-          
-        </li>
-      
-        <li class="list-item">
-          
-            <a href="/tags/" class="item-link">标签</a>
-          
-        </li>
-      
-        <li class="list-item">
-          
-            <a href="/archives/" class="item-link">时间线</a>
-          
-        </li>
-      
-        <li class="list-item">
-          
-            <a href="/project/" class="item-link">开源项目</a>
-          
-        </li>
-      
-        <li class="list-item">
-          
-            <a href="/about/" class="item-link">关于我</a>
-          
-        </li>
-      
-    </ul>
-    <div class="menu">
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </div>
-    <div class="menu-mask">
-      <ul class="menu-list">
-        
-          <li class="menu-item">
-            
-              <a href="/" class="menu-link mobile-active">主页</a>
-            
-          </li>
-        
-          <li class="menu-item">
-            
-              <a href="/tags/" class="menu-link">标签</a>
-            
-          </li>
-        
-          <li class="menu-item">
-            
-              <a href="/archives/" class="menu-link">时间线</a>
-            
-          </li>
-        
-          <li class="menu-item">
-            
-              <a href="/project/" class="menu-link">开源项目</a>
-            
-          </li>
-        
-          <li class="menu-item">
-            
-              <a href="/about/" class="menu-link">关于我</a>
-            
-          </li>
-        
-      </ul>
-    </div>
-  </div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list"></ul>
+</nav>
+<div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">nimo.fun技术博客</a>
+</div>
+
+<nav class="site-navbar"></nav>
 </header>
 
-    <div id="about-banner" style="height:250px;background-image: url(https://pic4.zhimg.com/80/v2-4df3b54a4f98886029524274a9cbbe35_r.jpg)"></div>
-<div class="author">
-  <div class="head">
-    <img src="https://avatars.githubusercontent.com/u/3949015?s=460&v=4" />
-  </div>
-  <h3>nimoc</h3>
-  
-    <p class="description">👌 优秀的设计，简洁实现，满足复杂的需求。</p>
-  
-  <section class="share-icons">
-    
-    
-    
-      <a class="icon-github" href="https://github.com/nimoc" target="_blank">
-        <span class="fa-stack fa-lg">
-          <i class="fa fa-circle fa-stack-2x"></i>
-          <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content"><section id="posts" class="posts"><section id="archive" class="archive"><div class="archive-post">
+        <span class="archive-post-time">
+          2021-05-03
+          </span>
+        <span class="archive-post-title">
+          <a href="/mq/" class="archive-post-link">
+            
+          </a>
         </span>
-      </a>
-    
-    
-    
-      <a class="icon-zhihu" href="https://www.zhihu.com/people/nimoc" target="_blank">
-        <span class="fa-stack fa-lg">
-          <i class="fa fa-circle fa-stack-2x"></i>
-          <i class="fa fa-stack-1x fa-inverse">知</i>
+      </div>
+    <div class="archive-post">
+        <span class="archive-post-time">
+          2021-04-08
+          </span>
+        <span class="archive-post-title">
+          <a href="/atomicity/" class="archive-post-link">
+            原子性
+          </a>
         </span>
-      </a>
-    
-    
-  </section>
+      </div>
+    <div class="archive-post">
+        <span class="archive-post-time">
+          2021-02-28
+          </span>
+        <span class="archive-post-title">
+          <a href="/how_why_monitor_logs/" class="archive-post-link">
+            代码中的监控日志
+          </a>
+        </span>
+      </div>
+    <div class="archive-post">
+        <span class="archive-post-time">
+          2021-02-27
+          </span>
+        <span class="archive-post-title">
+          <a href="/concurrency_methodology/" class="archive-post-link">
+            解决并发方法论
+          </a>
+        </span>
+      </div>
+    <div class="archive-post">
+        <span class="archive-post-time">
+          2021-02-27
+          </span>
+        <span class="archive-post-title">
+          <a href="/cache_practice/" class="archive-post-link">
+            Redis实践
+          </a>
+        </span>
+      </div>
+    <div class="archive-post">
+        <span class="archive-post-time">
+          2020-05-11
+          </span>
+        <span class="archive-post-title">
+          <a href="/f2e_up/" class="archive-post-link">
+            Web 前端的困局与突破
+          </a>
+        </span>
+      </div>
+    <div class="archive-post">
+        <span class="archive-post-time">
+          2020-04-01
+          </span>
+        <span class="archive-post-title">
+          <a href="/ts_go_generics/" class="archive-post-link">
+            TypeScript 中 松散的类型当做药品
+          </a>
+        </span>
+      </div>
+    </section><nav class="pagination"></nav>
+    </section></div></div>
+      </main>
+
+      <footer id="footer" class="footer"><div class="copyright">
+  
+
+  <span class="copyright-year">&copy;2021<span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">nimoc</span>
+  </span>
 </div>
-<main class="app-body">
-  
-    <article class="article-card">
-      <h2 class="article-head">
-        <a href="/mq/"></a>
-      </h2>
-      <p class="article-date">May 3, 2021</p>
-      
-      <div class="article-summary">
-        
-          从 sql 出发认识消息队列文章思路：
-1INSERT INTO task (status,body) VALUES(&#x27;ready&#x27;, &#x27;...&#x27;)
- 发布消息（发布任务）
-
-1UPDATE task SET status = unacked, pro ...
-        
-      </div>
-      <a class="more" href="/mq/">阅读全部内容</a>
-    </article>
-  
-    <article class="article-card">
-      <h2 class="article-head">
-        <a href="/atomicity/">原子性</a>
-      </h2>
-      <p class="article-date">April 8, 2021</p>
-      
-        
-  <a href="/tags#后端" >
-    <span class="tag-code">后端</span>
-  </a>
-
-  <a href="/tags#编程技巧" >
-    <span class="tag-code">编程技巧</span>
-  </a>
-
-      
-      <div class="article-summary">
-        
-          原子性sql中插入数据职业生涯中最先遇到的原子性问题一般是SQL INSERT，例如存在如下两张表
-12345userid,nameuser_addressuser_id,address
-
-创建用户时提交的信息是
-1234&#123;    &quot;name&quot;: &quot;n ...
-        
-      </div>
-      <a class="more" href="/atomicity/">阅读全部内容</a>
-    </article>
-  
-    <article class="article-card">
-      <h2 class="article-head">
-        <a href="/how_why_monitor_logs/">代码中的监控日志</a>
-      </h2>
-      <p class="article-date">February 28, 2021</p>
-      
-        
-  <a href="/tags#后端" >
-    <span class="tag-code">后端</span>
-  </a>
-
-  <a href="/tags#编程技巧" >
-    <span class="tag-code">编程技巧</span>
-  </a>
-
-      
-      <div class="article-summary">
-        
-          代码中的监控日志日志有很多种类型，本文所说的代码中的监控日志指的是在某些环境记录日志，并在出现新日志时候及时监控日志内容判断业务是否稳定。
-监控查询不存在的数据看看下面的代码：
-1234567891011121314151617181920212223// 业务逻辑层：获取商品信息funct ...
-        
-      </div>
-      <a class="more" href="/how_why_monitor_logs/">阅读全部内容</a>
-    </article>
-  
-    <article class="article-card">
-      <h2 class="article-head">
-        <a href="/concurrency_methodology/">解决并发方法论</a>
-      </h2>
-      <p class="article-date">February 27, 2021</p>
-      
-        
-  <a href="/tags#后端" >
-    <span class="tag-code">后端</span>
-  </a>
-
-  <a href="/tags#并发" >
-    <span class="tag-code">并发</span>
-  </a>
-
-      
-      <div class="article-summary">
-        
-          解决并发方法论
-首先记住以下几点
-
-原子性：确认哪些操作不是原子性，考虑不是原子性会导致什么问题。并考虑所有操作都可能失败或进程/协程中断
-操作延迟：代码中每个操作的执行时间都是不确定的。每一行之间都可能出现非常大的延迟，需假设每行代码之间都有 sleep 操作。网络io中客户端收到消息的时 ...
-        
-      </div>
-      <a class="more" href="/concurrency_methodology/">阅读全部内容</a>
-    </article>
-  
-    <article class="article-card">
-      <h2 class="article-head">
-        <a href="/cache_practice/">Redis实践</a>
-      </h2>
-      <p class="article-date">February 27, 2021</p>
-      
-        
-  <a href="/tags#后端" >
-    <span class="tag-code">后端</span>
-  </a>
-
-      
-      <div class="article-summary">
-        
-          Redis实践
-Cache Aside（边路缓存）不使用缓存例如我们在开发提问系统，提问访问量非常大，每秒一万次访问。
-最开始的伪代码如下：
-12345678910111213function QuestionByID(id) &#123;  row = SQLQuery(&quot;SEL ...
-        
-      </div>
-      <a class="more" href="/cache_practice/">阅读全部内容</a>
-    </article>
-  
-    <article class="article-card">
-      <h2 class="article-head">
-        <a href="/f2e_up/">Web 前端的困局与突破</a>
-      </h2>
-      <p class="article-date">May 11, 2020</p>
-      
-        
-  <a href="/tags#前端" >
-    <span class="tag-code">前端</span>
-  </a>
-
-  <a href="/tags#职业思考建议" >
-    <span class="tag-code">职业思考建议</span>
-  </a>
-
-      
-      <div class="article-summary">
-        
-          Web 前端的困局与突破
-
-每个Web前端都会不时思考自身对于团队的价值和在团队中的话语权,这类思考背后存在困局和突破
-
-困局困局必然是负能量,耐下心来了解困局后再看突破.
-价值在团队中前端的职责是实现原型和设计工作中的客户端部分,是实现者.很少参与功能/程序设计.极少数业务场景下是重前端的 ...
-        
-      </div>
-      <a class="more" href="/f2e_up/">阅读全部内容</a>
-    </article>
-  
-    <article class="article-card">
-      <h2 class="article-head">
-        <a href="/ts_go_generics/">TypeScript 中 松散的类型当做药品</a>
-      </h2>
-      <p class="article-date">April 1, 2020</p>
-      
-        
-  <a href="/tags#前端" >
-    <span class="tag-code">前端</span>
-  </a>
-
-  <a href="/tags#TypeScript" >
-    <span class="tag-code">TypeScript</span>
-  </a>
-
-      
-      <div class="article-summary">
-        
-          将 TypeScript 中 松散的类型当做药品
-
-本文代码有大量的 test 和  expect 函数,目的是替代注释,用 expect 说明变量和函数的返回值
-
-动态语言不需要泛型基于显而易见的原因如果你使用的是动态语言没有类型系统意味着一切都是泛型.
-我通过列举一个 filterZer ...
-        
-      </div>
-      <a class="more" href="/ts_go_generics/">阅读全部内容</a>
-    </article>
-  
-
-  
-</main>
-
-    <div class="scroll-top">
-  <span class="arrow-icon"></span>
-</div>
-    <footer class="app-footer">
-  <p class="copyright">
-    &copy; 2021 | powered by <a href="https://nimoc.io" target="_blank">nimoc.io</a>
-  </p>
 </footer>
 
-<script>
-  function async(u, c) {
-    var d = document, t = 'script',
-      o = d.createElement(t),
-      s = d.getElementsByTagName(t)[0];
-    o.src = u;
-    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-    s.parentNode.insertBefore(o, s);
-  }
-</script>
-<script>
-  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
-    FastClick.attach(document.body);
-  })
-</script>
-
-<script>
-  var hasLine = 'true';
-  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
-    $('figure pre').each(function(i, block) {
-      var figure = $(this).parents('figure');
-      if (hasLine === 'false') {
-        figure.find('.gutter').hide();
-      }
-      var lang = figure.attr('class').split(' ')[1] || 'code';
-      var codeHtml = $(this).html();
-      var codeTag = document.createElement('code');
-      codeTag.className = lang;
-      codeTag.innerHTML = codeHtml;
-      $(this).attr('class', '').empty().html(codeTag);
-      figure.attr('data-lang', lang.toUpperCase());
-      hljs.highlightBlock(block);
-    });
-  })
-</script>
-<!-- Baidu Tongji -->
-
-
-<script src="/js/script.js"></script>
-
-
-  </body>
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div><script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  <script type="text/javascript" src="/js/src/even.js?v="></script>
+</body>
 </html>

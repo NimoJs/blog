@@ -1,163 +1,111 @@
 <!DOCTYPE html>
-<html>
-  <head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
-  
-    <link rel="shortcut icon" type="image/ico" href="https://avatars.githubusercontent.com/u/3949015?s=460&amp;v=4"/>
-  
-  <title>
-    
-      解决并发方法论 | nimoc.io 技术博客
-    
-  </title>
-  
-    
-  <meta name="description" content="前端,后端,团队协作,编码心得">
-  
-  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
-  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
-  
-<link rel="stylesheet" href="/css/style.css">
-
-  
-  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
-  
-  
-  
-  
-    <!-- MathJax support START -->
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-          processEscapes: true,
-          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-        }
-      });
-    </script>
-
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for (i=0; i < all.length; i += 1) {
-          all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-      });
-    </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <!-- MathJax support END -->
-  
+<html lang="zh-Hans">
+  <head><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-  
-  <style >
-      .markdown-content img, .article-summary img{
-          cursor: default;
-      }
-  </style>
-<meta name="generator" content="Hexo 5.4.0"></head>
-<div class="wechat-share">
-  <img src="https://avatars.githubusercontent.com/u/3949015?s=460&v=4" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="description" content="解决并发方法论"/><meta name="keywords" content="后端, 并发, nimo.fun技术博客" /><link rel="alternate" href="/atom.xml" title="nimo.fun技术博客" type="application/atom+xml">
+<link rel="canonical" href="https://nimo.fun/concurrency_methodology/"/>
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=" />
+
+<script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<script>
+  window.config = {"leancloud":"","toc":"","fancybox":"","pjax":"","latex":""};
+</script>
+<style>
+.header .logo-wrapper .logo {
+font-family: Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, "PingFang SC", Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+letter-spacing:-.02em;
+}
+html .post .post-content img {
+  box-shadow: 0px 0px .2em rgba(111,111,111,.4);
+  border-radius:.5em;
+  margin-left:auto;
+  margin-right:auto;
+  display:block;
+}
+.post .post-header .post-title ,
+.header .site-navbar .menu .menu-item-link,
+.post .post-content h1,
+.mobile-navbar .mobile-header-logo .logo,
+html body {
+ font-family: Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, "PingFang SC", Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+}
+.post .post-content h1 {
+display:none;
+}
+::selection {
+    background: #95beea;
+    color: #111;
+}
+html body {
+  background:white;
+}
+</style>
+
+    <title>解决并发方法论 - nimo.fun技术博客</title>
+  <meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">nimo.fun技术博客</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
 </div>
 
-  <body>
-    <header class="header fixed-header">
-  <div class="header-container">
-    <a class="home-link" href="/">
-      <div class="logo" style="border-radius:100%;background-image:url(https://avatars.githubusercontent.com/u/3949015?s=460&v=4);"></div>
-      <span>nimoc.io 技术博客</span>
-    </a>
-    <ul class="right-list">
-      
-        <li class="list-item">
-          
-            <a href="/" class="item-link">主页</a>
-          
-        </li>
-      
-        <li class="list-item">
-          
-            <a href="/tags/" class="item-link">标签</a>
-          
-        </li>
-      
-        <li class="list-item">
-          
-            <a href="/archives/" class="item-link">时间线</a>
-          
-        </li>
-      
-        <li class="list-item">
-          
-            <a href="/project/" class="item-link">开源项目</a>
-          
-        </li>
-      
-        <li class="list-item">
-          
-            <a href="/about/" class="item-link">关于我</a>
-          
-        </li>
-      
-    </ul>
-    <div class="menu">
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </div>
-    <div class="menu-mask">
-      <ul class="menu-list">
-        
-          <li class="menu-item">
-            
-              <a href="/" class="menu-link">主页</a>
-            
-          </li>
-        
-          <li class="menu-item">
-            
-              <a href="/tags/" class="menu-link">标签</a>
-            
-          </li>
-        
-          <li class="menu-item">
-            
-              <a href="/archives/" class="menu-link">时间线</a>
-            
-          </li>
-        
-          <li class="menu-item">
-            
-              <a href="/project/" class="menu-link">开源项目</a>
-            
-          </li>
-        
-          <li class="menu-item">
-            
-              <a href="/about/" class="menu-link">关于我</a>
-            
-          </li>
-        
-      </ul>
-    </div>
-  </div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list"></ul>
+</nav>
+<div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">nimo.fun技术博客</a>
+</div>
+
+<nav class="site-navbar"></nav>
 </header>
 
-    <div id="article-banner">
-  <h2>解决并发方法论</h2>
-  <p class="post-date">2021-02-27</p>
-  <div class="arrow-down">
-    <a href="javascript:;"></a>
-  </div>
-</div>
-<main class="app-body flex-box">
-  <!-- Article START -->
-  <article class="post-article">
-    <section class="markdown-content"><h1 id="解决并发方法论"><a href="#解决并发方法论" class="headerlink" title="解决并发方法论"></a>解决并发方法论</h1><p><a href="https://nimoc.io/notice/"><img src="http://nimoc.io/notice/index.svg" alt="nimoc.io"></a></p>
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content"><article class="post">
+    <header class="post-header">
+      <h1 class="post-title">解决并发方法论
+        </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2021-02-27
+        </span></div>
+    </header>
+
+    <div class="post-content"><h1 id="解决并发方法论"><a href="#解决并发方法论" class="headerlink" title="解决并发方法论"></a>解决并发方法论</h1><p><a href="https://nimo.fun/notice/"><img src="http://nimo.fun/notice/index.svg" alt="nimo.fun"></a></p>
 <p>首先记住以下几点</p>
 <ol>
 <li><strong>原子性</strong>：确认哪些操作不是原子性，考虑不是原子性会导致什么问题。并考虑所有操作都可能失败或进程/协程中断</li>
@@ -206,150 +154,45 @@
 </blockquote>
 <p>TODO:解锁失败后锁回滚，心跳续命锁，etcd分布式锁</p>
 <p>原文地址 <a target="_blank" rel="noopener" href="https://github.com/nimoc/blog/issues/42">https://github.com/nimoc/blog/issues/42</a> (原文持续更新)</p>
-</section>
-    <script src="https://utteranc.es/client.js"
-            repo="nimoc/blog"
-            issue-number="42"
-            theme="github-light"
-            crossorigin="anonymous"
-            async>
-    </script>
-    <!-- Tags START -->
-    
-      <div class="tags">
-        <span>Tags:</span>
-        
-  <a href="/tags#后端" >
-    <span class="tag-code">后端</span>
-  </a>
-
-  <a href="/tags#并发" >
-    <span class="tag-code">并发</span>
-  </a>
 
       </div>
-    
-    <!-- Tags END -->
-    <!-- NAV START -->
-    
-  <div class="nav-container">
-    <!-- reverse left and right to put prev and next in a more logic postition -->
-    
-      <a class="nav-left" href="/cache_practice/">
-        <span class="nav-arrow">← </span>
+      
+      <footer class="post-footer">
+        <div class="post-tags">
+            <a href="/tags/%E5%90%8E%E7%AB%AF/">后端</a>
+            <a href="/tags/%E5%B9%B6%E5%8F%91/">并发</a>
+            </div>
         
-          Redis实践
-        
+        <nav class="post-nav"><a class="prev" href="/how_why_monitor_logs/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">代码中的监控日志</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
-    
-    
-      <a class="nav-right" href="/how_why_monitor_logs/">
-        
-          代码中的监控日志
-        
-        <span class="nav-arrow"> →</span>
+    <a class="next" href="/cache_practice/">
+        <span class="next-text nav-default">Redis实践</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
       </a>
-    
-  </div>
+    </nav></footer>
+    </article></div><div class="comments" id="comments"></div></div>
+      </main>
 
-    <!-- NAV END -->
-
-    <!-- 二维码 START -->
-    
-    <!-- 二维码 END -->
-    
-      <!-- No Comment -->
-    
-  </article>
-  <!-- Article END -->
-  <!-- Catalog START -->
+      <footer id="footer" class="footer"><div class="copyright">
   
-    <aside class="catalog-container">
-  <div class="toc-main">
-    <strong class="toc-title">目录</strong>
-    
-      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#%E8%A7%A3%E5%86%B3%E5%B9%B6%E5%8F%91%E6%96%B9%E6%B3%95%E8%AE%BA"><span class="toc-nav-text">解决并发方法论</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E4%BA%92%E6%96%A5%E9%94%81"><span class="toc-nav-text">互斥锁</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#sql%E7%BA%A2%E5%8C%85%E6%B1%A0"><span class="toc-nav-text">sql红包池</span></a></li></ol></li></ol>
-    
-  </div>
-</aside>
 
-  
-  <!-- Catalog END -->
-
-</main>
-
-<script>
-  (function () {
-    var url = 'https://nimoc.io/concurrency_methodology/';
-    var banner = ''
-    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
-      $('#article-banner').css({
-        'background-image': 'url(' + banner + ')'
-      })
-    } else {
-      $('#article-banner').geopattern(url)
-    }
-    $('.header').removeClass('fixed-header')
-
-
-  })();
-</script>
-
-
-
-
-
-
-
-    <div class="scroll-top">
-  <span class="arrow-icon"></span>
+  <span class="copyright-year">&copy;2021<span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">nimoc</span>
+  </span>
 </div>
-    <footer class="app-footer">
-  <p class="copyright">
-    &copy; 2021 | powered by <a href="https://nimoc.io" target="_blank">nimoc.io</a>
-  </p>
 </footer>
 
-<script>
-  function async(u, c) {
-    var d = document, t = 'script',
-      o = d.createElement(t),
-      s = d.getElementsByTagName(t)[0];
-    o.src = u;
-    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-    s.parentNode.insertBefore(o, s);
-  }
-</script>
-<script>
-  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
-    FastClick.attach(document.body);
-  })
-</script>
-
-<script>
-  var hasLine = 'true';
-  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
-    $('figure pre').each(function(i, block) {
-      var figure = $(this).parents('figure');
-      if (hasLine === 'false') {
-        figure.find('.gutter').hide();
-      }
-      var lang = figure.attr('class').split(' ')[1] || 'code';
-      var codeHtml = $(this).html();
-      var codeTag = document.createElement('code');
-      codeTag.className = lang;
-      codeTag.innerHTML = codeHtml;
-      $(this).attr('class', '').empty().html(codeTag);
-      figure.attr('data-lang', lang.toUpperCase());
-      hljs.highlightBlock(block);
-    });
-  })
-</script>
-<!-- Baidu Tongji -->
-
-
-<script src="/js/script.js"></script>
-
-
-  </body>
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div><script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  <script type="text/javascript" src="/js/src/even.js?v="></script>
+</body>
 </html>

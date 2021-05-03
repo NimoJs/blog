@@ -1,165 +1,111 @@
 <!DOCTYPE html>
-<html>
-  <head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
-  
-    <link rel="shortcut icon" type="image/ico" href="https://avatars.githubusercontent.com/u/3949015?s=460&amp;v=4"/>
-  
-  <title>
-    
-      代码中的监控日志 | nimoc.io 技术博客
-    
-  </title>
-  
-  <meta name="keywords" content="业务日志,日志规范,">
-  
-    
-  <meta name="description" content="通过具体的例子来说明代码中何时写入监控日志，提供思考方法。应对不的情况。">
-  
-  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
-  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
-  
-<link rel="stylesheet" href="/css/style.css">
-
-  
-  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
-  
-  
-  
-  
-    <!-- MathJax support START -->
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-          processEscapes: true,
-          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-        }
-      });
-    </script>
-
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for (i=0; i < all.length; i += 1) {
-          all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-      });
-    </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <!-- MathJax support END -->
-  
+<html lang="zh-Hans">
+  <head><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-  
-  <style >
-      .markdown-content img, .article-summary img{
-          cursor: default;
-      }
-  </style>
-<meta name="generator" content="Hexo 5.4.0"></head>
-<div class="wechat-share">
-  <img src="https://avatars.githubusercontent.com/u/3949015?s=460&v=4" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="description" content="通过具体的例子来说明代码中何时写入监控日志，提供思考方法。应对不的情况。"/><meta name="keywords" content="业务日志,日志规范" /><link rel="alternate" href="/atom.xml" title="nimo.fun技术博客" type="application/atom+xml">
+<link rel="canonical" href="https://nimo.fun/how_why_monitor_logs/"/>
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=" />
+
+<script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<script>
+  window.config = {"leancloud":"","toc":"","fancybox":"","pjax":"","latex":""};
+</script>
+<style>
+.header .logo-wrapper .logo {
+font-family: Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, "PingFang SC", Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+letter-spacing:-.02em;
+}
+html .post .post-content img {
+  box-shadow: 0px 0px .2em rgba(111,111,111,.4);
+  border-radius:.5em;
+  margin-left:auto;
+  margin-right:auto;
+  display:block;
+}
+.post .post-header .post-title ,
+.header .site-navbar .menu .menu-item-link,
+.post .post-content h1,
+.mobile-navbar .mobile-header-logo .logo,
+html body {
+ font-family: Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, "PingFang SC", Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+}
+.post .post-content h1 {
+display:none;
+}
+::selection {
+    background: #95beea;
+    color: #111;
+}
+html body {
+  background:white;
+}
+</style>
+
+    <title>代码中的监控日志 - nimo.fun技术博客</title>
+  <meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">nimo.fun技术博客</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
 </div>
 
-  <body>
-    <header class="header fixed-header">
-  <div class="header-container">
-    <a class="home-link" href="/">
-      <div class="logo" style="border-radius:100%;background-image:url(https://avatars.githubusercontent.com/u/3949015?s=460&v=4);"></div>
-      <span>nimoc.io 技术博客</span>
-    </a>
-    <ul class="right-list">
-      
-        <li class="list-item">
-          
-            <a href="/" class="item-link">主页</a>
-          
-        </li>
-      
-        <li class="list-item">
-          
-            <a href="/tags/" class="item-link">标签</a>
-          
-        </li>
-      
-        <li class="list-item">
-          
-            <a href="/archives/" class="item-link">时间线</a>
-          
-        </li>
-      
-        <li class="list-item">
-          
-            <a href="/project/" class="item-link">开源项目</a>
-          
-        </li>
-      
-        <li class="list-item">
-          
-            <a href="/about/" class="item-link">关于我</a>
-          
-        </li>
-      
-    </ul>
-    <div class="menu">
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </div>
-    <div class="menu-mask">
-      <ul class="menu-list">
-        
-          <li class="menu-item">
-            
-              <a href="/" class="menu-link">主页</a>
-            
-          </li>
-        
-          <li class="menu-item">
-            
-              <a href="/tags/" class="menu-link">标签</a>
-            
-          </li>
-        
-          <li class="menu-item">
-            
-              <a href="/archives/" class="menu-link">时间线</a>
-            
-          </li>
-        
-          <li class="menu-item">
-            
-              <a href="/project/" class="menu-link">开源项目</a>
-            
-          </li>
-        
-          <li class="menu-item">
-            
-              <a href="/about/" class="menu-link">关于我</a>
-            
-          </li>
-        
-      </ul>
-    </div>
-  </div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list"></ul>
+</nav>
+<div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">nimo.fun技术博客</a>
+</div>
+
+<nav class="site-navbar"></nav>
 </header>
 
-    <div id="article-banner">
-  <h2>代码中的监控日志</h2>
-  <p class="post-date">2021-02-28</p>
-  <div class="arrow-down">
-    <a href="javascript:;"></a>
-  </div>
-</div>
-<main class="app-body flex-box">
-  <!-- Article START -->
-  <article class="post-article">
-    <section class="markdown-content"><h1 id="代码中的监控日志"><a href="#代码中的监控日志" class="headerlink" title="代码中的监控日志"></a>代码中的监控日志</h1><p>日志有很多种类型，本文所说的代码中的监控日志指的是在某些环境记录日志，并在出现新日志时候及时监控日志内容判断业务是否稳定。</p>
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content"><article class="post">
+    <header class="post-header">
+      <h1 class="post-title">代码中的监控日志
+        </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2021-02-28
+        </span></div>
+    </header>
+
+    <div class="post-content"><h1 id="代码中的监控日志"><a href="#代码中的监控日志" class="headerlink" title="代码中的监控日志"></a>代码中的监控日志</h1><p>日志有很多种类型，本文所说的代码中的监控日志指的是在某些环境记录日志，并在出现新日志时候及时监控日志内容判断业务是否稳定。</p>
 <h2 id="监控查询不存在的数据"><a href="#监控查询不存在的数据" class="headerlink" title="监控查询不存在的数据"></a>监控查询不存在的数据</h2><p>看看下面的代码：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 业务逻辑层：获取商品信息</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">BusinessLayer_GoodsDetail</span>(<span class="params">goodsID</span>) </span>&#123;</span><br><span class="line">    goods = DataStorage_GoodsByID(goodsID)</span><br><span class="line">    <span class="keyword">if</span> (goods == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            message: <span class="string">&quot;商品不存在&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        title: goods.title,</span><br><span class="line">        price: goods.price,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 数据存储层：获取商品数据</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">DataStorage_GoodsByID</span>(<span class="params">goodsID</span>) </span>&#123;</span><br><span class="line">    row = sql(<span class="string">&quot;SELCT * FROM goods WHERE id = ? LIMIT 1&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> row == <span class="literal">null</span> &#123;</span><br><span class="line">        <span class="comment">// 数据查询不到记录日志</span></span><br><span class="line">        MonitorLog(<span class="string">&quot;remind&quot;</span>, <span class="string">&quot;database: goods not found, goodsID:&quot;</span> + goodsID )</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> row</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -186,150 +132,45 @@
 <p>当我们在一个日UV100万的项目中发现10分钟内容有1万次不存在的数据查询，则能通过监控系统快速发现问题。并分析问题解决问题。（谁都不想问题由客户反馈给客服，客服再反馈给自己）</p>
 <h2 id="监控的位置"><a href="#监控的位置" class="headerlink" title="监控的位置"></a>监控的位置</h2><p>刚才的监控代码是在 <code>DataStorage_GoodsByID</code> 中也就是数据逻辑层。而不是 <code>BusinessLayer_GoodsDetail</code>业务逻辑层。<br>原因是当前业务场景下要查询商品在大部分情况一定存在，因为商品 id 是客户端通过其他请求获取到的。</p>
 <p>未完待续…</p>
-</section>
-    <script src="https://utteranc.es/client.js"
-            repo="nimoc/blog"
-            issue-number="43"
-            theme="github-light"
-            crossorigin="anonymous"
-            async>
-    </script>
-    <!-- Tags START -->
-    
-      <div class="tags">
-        <span>Tags:</span>
-        
-  <a href="/tags#后端" >
-    <span class="tag-code">后端</span>
-  </a>
-
-  <a href="/tags#编程技巧" >
-    <span class="tag-code">编程技巧</span>
-  </a>
 
       </div>
-    
-    <!-- Tags END -->
-    <!-- NAV START -->
-    
-  <div class="nav-container">
-    <!-- reverse left and right to put prev and next in a more logic postition -->
-    
-      <a class="nav-left" href="/concurrency_methodology/">
-        <span class="nav-arrow">← </span>
+      
+      <footer class="post-footer">
+        <div class="post-tags">
+            <a href="/tags/%E5%90%8E%E7%AB%AF/">后端</a>
+            <a href="/tags/%E7%BC%96%E7%A8%8B%E6%8A%80%E5%B7%A7/">编程技巧</a>
+            </div>
         
-          解决并发方法论
-        
+        <nav class="post-nav"><a class="prev" href="/atomicity/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">原子性</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
-    
-    
-      <a class="nav-right" href="/atomicity/">
-        
-          原子性
-        
-        <span class="nav-arrow"> →</span>
+    <a class="next" href="/concurrency_methodology/">
+        <span class="next-text nav-default">解决并发方法论</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
       </a>
-    
-  </div>
+    </nav></footer>
+    </article></div><div class="comments" id="comments"></div></div>
+      </main>
 
-    <!-- NAV END -->
-
-    <!-- 二维码 START -->
-    
-    <!-- 二维码 END -->
-    
-      <!-- No Comment -->
-    
-  </article>
-  <!-- Article END -->
-  <!-- Catalog START -->
+      <footer id="footer" class="footer"><div class="copyright">
   
-    <aside class="catalog-container">
-  <div class="toc-main">
-    <strong class="toc-title">目录</strong>
-    
-      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#%E4%BB%A3%E7%A0%81%E4%B8%AD%E7%9A%84%E7%9B%91%E6%8E%A7%E6%97%A5%E5%BF%97"><span class="toc-nav-text">代码中的监控日志</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E7%9B%91%E6%8E%A7%E6%9F%A5%E8%AF%A2%E4%B8%8D%E5%AD%98%E5%9C%A8%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="toc-nav-text">监控查询不存在的数据</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E7%9B%91%E6%8E%A7%E6%97%A5%E5%BF%97%E7%BB%86%E8%8A%82"><span class="toc-nav-text">监控日志细节</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E7%9B%91%E6%8E%A7%E7%9A%84%E4%BD%8D%E7%BD%AE"><span class="toc-nav-text">监控的位置</span></a></li></ol></li></ol>
-    
-  </div>
-</aside>
 
-  
-  <!-- Catalog END -->
-
-</main>
-
-<script>
-  (function () {
-    var url = 'https://nimoc.io/how_why_monitor_logs/';
-    var banner = ''
-    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
-      $('#article-banner').css({
-        'background-image': 'url(' + banner + ')'
-      })
-    } else {
-      $('#article-banner').geopattern(url)
-    }
-    $('.header').removeClass('fixed-header')
-
-
-  })();
-</script>
-
-
-
-
-
-
-
-    <div class="scroll-top">
-  <span class="arrow-icon"></span>
+  <span class="copyright-year">&copy;2021<span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">nimoc</span>
+  </span>
 </div>
-    <footer class="app-footer">
-  <p class="copyright">
-    &copy; 2021 | powered by <a href="https://nimoc.io" target="_blank">nimoc.io</a>
-  </p>
 </footer>
 
-<script>
-  function async(u, c) {
-    var d = document, t = 'script',
-      o = d.createElement(t),
-      s = d.getElementsByTagName(t)[0];
-    o.src = u;
-    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-    s.parentNode.insertBefore(o, s);
-  }
-</script>
-<script>
-  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
-    FastClick.attach(document.body);
-  })
-</script>
-
-<script>
-  var hasLine = 'true';
-  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
-    $('figure pre').each(function(i, block) {
-      var figure = $(this).parents('figure');
-      if (hasLine === 'false') {
-        figure.find('.gutter').hide();
-      }
-      var lang = figure.attr('class').split(' ')[1] || 'code';
-      var codeHtml = $(this).html();
-      var codeTag = document.createElement('code');
-      codeTag.className = lang;
-      codeTag.innerHTML = codeHtml;
-      $(this).attr('class', '').empty().html(codeTag);
-      figure.attr('data-lang', lang.toUpperCase());
-      hljs.highlightBlock(block);
-    });
-  })
-</script>
-<!-- Baidu Tongji -->
-
-
-<script src="/js/script.js"></script>
-
-
-  </body>
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div><script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  <script type="text/javascript" src="/js/src/even.js?v="></script>
+</body>
 </html>
