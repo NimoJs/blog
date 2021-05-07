@@ -13,11 +13,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
-<meta name="description" content="在代码中明确函数参数固定且每个参数只能有一个类型能让代码更易于维护"/><meta name="keywords" content="typescript规范,typescript技巧" /><link rel="alternate" href="/atom.xml" title="nimo.fun技术博客" type="application/atom+xml">
+<meta name="description" content="在代码中明确函数参数固定且每个参数只能有一个类型能让代码更易于维护"/><meta name="keywords" content="typescript规范,typescript技巧" /><link rel="alternate" href="/atom.xml" title="nimo.fun技术博客" type="application/atom+xml"><link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/3949015?v=4?v=2.11.0" />
 <link rel="canonical" href="https://nimo.fun/ts_go_generics/"/>
 
-
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=" />
+<link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.11.0" />
 
 <script id="baidu_push">
 (function(){
@@ -34,7 +34,7 @@
 })();
 </script>
 <script>
-  window.config = {"leancloud":"","toc":"","fancybox":"","pjax":"","latex":""};
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":"","latex":false};
 </script>
 <style>
 .header .logo-wrapper .logo {
@@ -82,14 +82,30 @@ html body {
 </div>
 
 <nav id="mobile-menu" class="mobile-menu slideout-menu">
-  <ul class="mobile-menu-list"></ul>
+  <ul class="mobile-menu-list"><a href="/">
+        <li class="mobile-menu-item">首页
+          </li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签
+          </li>
+      </a></ul>
 </nav>
 <div class="container" id="mobile-panel">
       <header id="header" class="header"><div class="logo-wrapper">
   <a href="/." class="logo">nimo.fun技术博客</a>
 </div>
 
-<nav class="site-navbar"></nav>
+<nav class="site-navbar"><ul id="menu" class="menu"><li class="menu-item">
+          <a class="menu-item-link" href="/">
+            首页
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/tags/">
+            标签
+            </a>
+        </li>
+      </ul></nav>
 </header>
 
       <main id="main" class="main">
@@ -105,7 +121,12 @@ html body {
         </span></div>
     </header>
 
-    <div class="post-content"><h1 id="将-TypeScript-中-松散的类型当做药品"><a href="#将-TypeScript-中-松散的类型当做药品" class="headerlink" title="将 TypeScript 中 松散的类型当做药品"></a>将 TypeScript 中 松散的类型当做药品</h1><p><a href="https://nimo.fun/notice/"><img src="http://nimo.fun/notice/index.svg" alt="nimo.fun"></a></p>
+    <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">Contents</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B0%86-TypeScript-%E4%B8%AD-%E6%9D%BE%E6%95%A3%E7%9A%84%E7%B1%BB%E5%9E%8B%E5%BD%93%E5%81%9A%E8%8D%AF%E5%93%81"><span class="toc-text">将 TypeScript 中 松散的类型当做药品</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E8%AF%AD%E8%A8%80%E4%B8%8D%E9%9C%80%E8%A6%81%E6%B3%9B%E5%9E%8B"><span class="toc-text">动态语言不需要泛型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TypeScript-%E5%AE%9E%E7%8E%B0%E6%B3%9B%E5%9E%8B"><span class="toc-text">TypeScript 实现泛型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%81%94%E5%90%88%E7%B1%BB%E5%9E%8B"><span class="toc-text">联合类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TypeScript-filterZeroValue-%E6%AD%A3%E7%A1%AE%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-text">TypeScript filterZeroValue 正确的实现</span></a></li></ol></li></ol></li></ol>
+    </div>
+  </div><div class="post-content"><h1 id="将-TypeScript-中-松散的类型当做药品"><a href="#将-TypeScript-中-松散的类型当做药品" class="headerlink" title="将 TypeScript 中 松散的类型当做药品"></a>将 TypeScript 中 松散的类型当做药品</h1><p><a href="https://nimo.fun/notice/"><img src="http://nimo.fun/notice/index.svg" alt="nimo.fun"></a></p>
 <blockquote>
 <p>本文代码有大量的 test 和  expect 函数,目的是替代注释,用 expect 说明变量和函数的返回值</p>
 </blockquote>
@@ -180,10 +201,12 @@ html body {
     </article></div><div class="comments" id="comments"></div></div>
       </main>
 
-      <footer id="footer" class="footer"><div class="copyright">
+      <footer id="footer" class="footer"><div class="social-links"><a target="_blank" rel="noopener" href="https://github.com/nimoc" class="iconfont icon-github" title="github"></a>
+        <a target="_blank" rel="noopener" href="https://www.zhihu.com/people/nimoc" class="iconfont icon-zhihu" title="zhihu"></a>
+        </div><div class="copyright">
   <a style="font-size:1em;" target="_blank" rel="noopener" href="https://beian.miit.gov.cn/" taregt="_blank">沪ICP备2021012662号</a>
   <br />
-  <span class="copyright-year" style="display:none;" >&copy;2021<span class="heart" hidden >
+  <span class="copyright-year" style="display:none;" >&copy;2015 - 2021<span class="heart" hidden >
       <i class="iconfont icon-heart"></i>
     </span>
     <span class="author" hidden >nimoc</span>
@@ -196,6 +219,7 @@ html body {
       </div>
     </div><script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
   <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
-  <script type="text/javascript" src="/js/src/even.js?v="></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/src/even.js?v=2.11.0"></script>
 </body>
 </html>
