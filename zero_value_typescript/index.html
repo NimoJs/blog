@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="description" content="使用 ts 要带入静态类型的思维,虽然会写出很多在js角度看起来很麻烦的类型代码,但是这些代码会让你的项目稳定性更高.而空值设计可以让编写 ts 更加轻松稳定."/><meta name="keywords" content="typescript空值,typescript规范,typescript技巧" /><link rel="alternate" href="/atom.xml" title="nimo.fun技术博客" type="application/atom+xml"><link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/3949015?v=4?v=2.11.0" />
+<link rel="canonical" href="https://nimo.fun/zero_value_typescript/"/>
+
+<link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.11.0" />
+
+<script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":"","latex":false};
+</script>
+<style>
+.header .logo-wrapper .logo {
+font-family: Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, "PingFang SC", Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+letter-spacing:-.02em;
+}
+html .post .post-content img {
+  box-shadow: 0px 0px .2em rgba(111,111,111,.4);
+  border-radius:.5em;
+  margin-left:auto;
+  margin-right:auto;
+  display:block;
+}
+.post .post-header .post-title ,
+.header .site-navbar .menu .menu-item-link,
+.post .post-content h1,
+.mobile-navbar .mobile-header-logo .logo,
+html body {
+ font-family: Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, "PingFang SC", Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+}
+.post .post-content h1 {
+display:none;
+}
+::selection {
+    background: #95beea;
+    color: #111;
+}
+html body {
+  background:white;
+}
+</style>
+
+    <title>利用空值设计让 TypeScript 更稳定和易于维护 - nimo.fun技术博客</title>
+  <meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">nimo.fun技术博客</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list"><a href="/">
+        <li class="mobile-menu-item">首页
+          </li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签
+          </li>
+      </a></ul>
+</nav>
+<div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">nimo.fun技术博客</a>
+</div>
+
+<nav class="site-navbar"><ul id="menu" class="menu"><li class="menu-item">
+          <a class="menu-item-link" href="/">
+            首页
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/tags/">
+            标签
+            </a>
+        </li>
+      </ul></nav>
+</header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content"><article class="post">
+    <header class="post-header">
+      <h1 class="post-title">利用空值设计让 TypeScript 更稳定和易于维护
+        </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-03-01
+        </span></div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">Contents</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E7%A9%BA%E5%80%BC%E8%AE%BE%E8%AE%A1%E8%AE%A9-TypeScript-%E6%9B%B4%E7%A8%B3%E5%AE%9A%E5%92%8C%E6%98%93%E4%BA%8E%E7%BB%B4%E6%8A%A4"><span class="toc-text">利用空值设计让 TypeScript 更稳定和易于维护</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E7%BC%BA%E7%9C%81%E6%95%B0%E6%8D%AE"><span class="toc-text">初始化缺省数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%8E%A5%E5%8F%A3%E6%96%B0%E5%A2%9E%E5%B1%9E%E6%80%A7"><span class="toc-text">数据接口新增属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A9%BA%E5%80%BC%E8%AE%BE%E8%AE%A1-zero-values"><span class="toc-text">空值设计 (zero values)</span></a></li></ol></li></ol>
+    </div>
+  </div><div class="post-content"><h1 id="利用空值设计让-TypeScript-更稳定和易于维护"><a href="#利用空值设计让-TypeScript-更稳定和易于维护" class="headerlink" title="利用空值设计让 TypeScript 更稳定和易于维护"></a>利用空值设计让 TypeScript 更稳定和易于维护</h1><p><a href="https://nimo.fun/notice/"><img src="http://nimo.fun/notice/index.svg" alt="nimo.fun"></a></p>
+<blockquote>
+<p>本文代码有大量的 test 和  expect 函数,目的是替代注释,用 expect 说明变量和函数的返回值</p>
+</blockquote>
+<h2 id="初始化缺省数据"><a href="#初始化缺省数据" class="headerlink" title="初始化缺省数据"></a>初始化缺省数据</h2><p>举一个场景的例子, 前端ajax接收后端响应数据:</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> iUser &#123;</span><br><span class="line">    name:<span class="built_in">string</span></span><br><span class="line">    age:<span class="built_in">number</span></span><br><span class="line">&#125;</span><br><span class="line">test(<span class="string">&quot;响应数据&quot;</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> responseJSON :<span class="built_in">string</span> = <span class="string">`&#123;&quot;name&quot;: &quot;nimo&quot;&#125;`</span></span><br><span class="line">    <span class="keyword">let</span> res:iUser = <span class="built_in">JSON</span>.parse(responseJSON)</span><br><span class="line">    expect(res.name).toBe(<span class="string">&quot;nimo&quot;</span>)</span><br><span class="line">    expect(res.age).toBe(<span class="literal">undefined</span>);</span><br><span class="line">    <span class="comment">// iUser 中 age 不是 age?:number 但是结果值是 undefined</span></span><br><span class="line">    <span class="comment">// 具体为什么会是 undefined,和为什么后端响应的数据没有 age 我们就不深入讨论了</span></span><br><span class="line">    <span class="comment">// 但是这种情况会导致出现一些bug,比如:</span></span><br><span class="line">    expect(res.age + <span class="number">1</span>).toBe(<span class="literal">NaN</span>);</span><br><span class="line">    <span class="comment">// 明明使用了ts,结果居然将 number 加上 number 得到了 NaN</span></span><br><span class="line">    <span class="comment">// 因为此时 res.age 是 undefined</span></span><br><span class="line">&#125;)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="数据接口新增属性"><a href="#数据接口新增属性" class="headerlink" title="数据接口新增属性"></a>数据接口新增属性</h2><p>接着来看对象数据的场景:</p>
+<p>最初定义了一个数据结构,只有 url 属性</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> iPost &#123;</span><br><span class="line">    url:<span class="built_in">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">test(<span class="string">&quot;然后有很多地方使用了 iData&quot;</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> a :iPost = &#123;</span><br><span class="line">        url: <span class="string">&quot;https://github.com/nimoc/blog/issues/33&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">console</span>.log(a)</span><br><span class="line">    <span class="keyword">let</span> b :iPost = &#123;</span><br><span class="line">        url: <span class="string">&quot;https://github.com/nimoc&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">console</span>.log(b)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如果此时 iPost 新增了属性 title,则会导致 a b 声明时编译期报错</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> iPost &#123;</span><br><span class="line">    url:<span class="built_in">string</span></span><br><span class="line">    title: <span class="built_in">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">test(<span class="string">&quot;然后有很多地方使用了 iData&quot;</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// TS2741: Property &#x27;title&#x27; is missing in type &#x27;&#123; url: string; &#125;&#x27; but required in type &#x27;iPost&#x27;.</span></span><br><span class="line">    <span class="keyword">let</span> a :iPost = &#123;</span><br><span class="line">        url: <span class="string">&quot;https://github.com/nimoc/blog/issues/33&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">console</span>.log(a)</span><br><span class="line">    <span class="comment">// TS2741: Property &#x27;title&#x27; is missing in type &#x27;&#123; url: string; &#125;&#x27; but required in type &#x27;iPost&#x27;.</span></span><br><span class="line">    <span class="keyword">let</span> b :iPost = &#123;</span><br><span class="line">        url: <span class="string">&quot;https://github.com/nimoc&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">console</span>.log(b)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>想要解决这个问题就需要在 a b 两处声明的地方加上 title 属性,如果不只是 a b 两次,而是由几十处就会变得非常麻烦.</p>
+<p>虽然你可以认为类型系统就应该这样严格,但是在这个场景下我更希望不需要改几十处代码</p>
+<p>如果不想改几十处可能会导致我们写出不好的代码,例如修改 iPost 为</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> iPost &#123;</span><br><span class="line">    url:<span class="built_in">string</span></span><br><span class="line">    title?: <span class="built_in">string</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种做法虽然不需要些几十处了,但是 <a target="_blank" rel="noopener" href="https://github.com/nimoc">nimo</a> 认为这种方式会引入不必要的 undefined .<br>导致明明用了类型系统,结果还要处理最繁琐的 undefined 问题.</p>
+<h2 id="空值设计-zero-values"><a href="#空值设计-zero-values" class="headerlink" title="空值设计 (zero values)"></a>空值设计 (zero values)</h2><p>我们借鉴 <a target="_blank" rel="noopener" href="http://golang.org/">golang</a> 中zero values 的设计,来解决上述2个问题.</p>
+<p>请看代码:</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> iPerson &#123;</span><br><span class="line">    name:<span class="built_in">string</span></span><br><span class="line">    age:<span class="built_in">number</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">interface</span> iMakePerson &#123;</span><br><span class="line">    name?:<span class="built_in">string</span></span><br><span class="line">    age?:<span class="built_in">number</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params">v: iMakePerson</span>) :<span class="title">iPerson</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        name: v.name || <span class="string">&quot;&quot;</span>,</span><br><span class="line">        age: v.age || <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">test(<span class="string">&quot;响应数据空值填充&quot;</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> response = Person(<span class="built_in">JSON</span>.parse(<span class="string">`&#123;&quot;name&quot;:&quot;nimo&quot;&#125;`</span>))</span><br><span class="line">    <span class="comment">// 不会出现 response.age 是 undefined 导致的 NaN 的情况</span></span><br><span class="line">    expect(response.age + <span class="number">1</span>).toBe(<span class="number">1</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">test(<span class="string">&quot;多处使用 Person &quot;</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> a  = Person(&#123;</span><br><span class="line">        name: <span class="string">&quot;nimo&quot;</span>,</span><br><span class="line">    &#125;)</span><br><span class="line">    expect(a).toStrictEqual(&#123;<span class="attr">name</span>:<span class="string">&quot;nimo&quot;</span>,<span class="attr">age</span>:<span class="number">0</span>&#125;)</span><br><span class="line">    <span class="keyword">let</span> b = Person(&#123;</span><br><span class="line">        age: <span class="number">18</span>,</span><br><span class="line">    &#125;);</span><br><span class="line">    expect(b).toStrictEqual(&#123;<span class="attr">name</span>:<span class="string">&quot;&quot;</span>,<span class="attr">age</span>:<span class="number">18</span>&#125;)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如果要新增属性则只需在  iPerson 和 iPerson中分别增加新属性</p>
+<p>比如新增了 nikename</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> iPerson &#123;</span><br><span class="line">    name:<span class="built_in">string</span></span><br><span class="line">    age:<span class="built_in">number</span></span><br><span class="line">    nikename:<span class="built_in">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">interface</span> iMakePerson &#123;</span><br><span class="line">    name?:<span class="built_in">string</span></span><br><span class="line">    age?:<span class="built_in">number</span></span><br><span class="line">    nikename?:<span class="built_in">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params">v: iMakePerson</span>) :<span class="title">iPerson</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        name: v.name || <span class="string">&quot;&quot;</span>,</span><br><span class="line">        age: v.age || <span class="number">0</span>,</span><br><span class="line">        nikename: v.nikename || <span class="string">&quot;&quot;</span>,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用所有 Person不会报错,因为接口定义了 nikename?:string</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> a  = Person(&#123;</span><br><span class="line">    name: <span class="string">&quot;nimo&quot;</span>,</span><br><span class="line">&#125;)</span><br><span class="line">expect(a).toStrictEqual(&#123;<span class="attr">name</span>:<span class="string">&quot;nimo&quot;</span>,<span class="attr">age</span>:<span class="number">0</span>,<span class="attr">nikename</span>:<span class="string">&quot;&quot;</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+
+<p>如果新增了 gender ,并且要求 gender 是必填的那么可以这样修改 iPerson</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> iPerson &#123;</span><br><span class="line">    name:<span class="built_in">string</span></span><br><span class="line">    age:<span class="built_in">number</span></span><br><span class="line">    nikename:<span class="built_in">string</span></span><br><span class="line">    gender:<span class="built_in">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">interface</span> iMakePerson &#123;</span><br><span class="line">    name?:<span class="built_in">string</span></span><br><span class="line">    age?:<span class="built_in">number</span></span><br><span class="line">    nikename?:<span class="built_in">string</span></span><br><span class="line">    gender:<span class="built_in">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params">v: iMakePerson</span>) :<span class="title">iPerson</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        name: v.name || <span class="string">&quot;&quot;</span>,</span><br><span class="line">        age: v.age || <span class="number">0</span>,</span><br><span class="line">        nikename: v.nikename || <span class="string">&quot;&quot;</span>,</span><br><span class="line">        gender: v.gender,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意此时在 iPerson 中 <code>gender</code> 不是 <code>gender?</code>,没有通过 ? 定义可以为undefined. 这样在所有调用 Person 的地方都需要定义 gender</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 编译期报错</span></span><br><span class="line"><span class="comment">// TS2345: Argument of type &#x27;&#123; name: string; &#125;&#x27; is not assignable to parameter of type &#x27;iPerson&#x27;.</span></span><br><span class="line">Person(&#123;</span><br><span class="line">    name: <span class="string">&quot;nimo&quot;</span>,</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 不报错</span></span><br><span class="line">Person(&#123;</span><br><span class="line">    name: <span class="string">&quot;nimo&quot;</span>,</span><br><span class="line">    gender: <span class="string">&quot;male&quot;</span>,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>通过空值设计可以消除代码中的 undefined , 提高开发效率,增加项目稳定性</strong></p>
+<p>基于空值make函数你可以略过部分属性的声明,不必要写大量的重复代码,但请切记一点在 make 函数中空值只能有</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;&quot;</span></span><br><span class="line"><span class="number">0</span></span><br><span class="line"><span class="literal">false</span></span><br><span class="line">[]</span><br><span class="line">另外一个 make 函数</span><br></pre></td></tr></table></figure>
+
+<p>这是因为如果你在 make 中定义了以上其他的值,会让调用 make 函数的人不明白到底make后属性默认值是什么.</p>
+<blockquote>
+<p>不能用 {} 是因为 另外一个make函数替代了空值对象.</p>
+</blockquote>
+<p>另外一个make 函数请看下面的例子</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> iSon &#123;</span><br><span class="line">    name:<span class="built_in">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">interface</span> iMakeSon &#123;</span><br><span class="line">    name?:<span class="built_in">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Son</span> (<span class="params">v :iMakeSon</span>):<span class="title">iSon</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        name: v.name || <span class="string">&quot;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">interface</span> iFamily &#123;</span><br><span class="line">    unity:<span class="built_in">boolean</span></span><br><span class="line">    son: iSon</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">interface</span> iMakeFamily &#123;</span><br><span class="line">    unity?: <span class="built_in">boolean</span></span><br><span class="line">    son?: iSon</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Family</span>(<span class="params">v :iMakeFamily</span>):<span class="title">iFamily</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        unity: v.unity || <span class="literal">false</span>,</span><br><span class="line">        son: v.son || Son(&#123;&#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">test(<span class="string">&quot;多层mark&quot;</span>,<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> data = Family(&#123;</span><br><span class="line">        unity: <span class="literal">true</span>,</span><br><span class="line">        <span class="comment">// son: Son(&#123;&#125;) // 此行可有可无,根据实际场景决定</span></span><br><span class="line">    &#125;)</span><br><span class="line">    expect(data).toStrictEqual(&#123;</span><br><span class="line">        <span class="string">&quot;son&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;name&quot;</span>: <span class="string">&quot;&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">&quot;unity&quot;</span>: <span class="literal">true</span></span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<hr>
+<p>多说一句,在 ts 中还可以将 son 直接包括在 family 中</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> iSome &#123;</span><br><span class="line">    unity:<span class="built_in">boolean</span></span><br><span class="line">    son: &#123;</span><br><span class="line">        name:<span class="built_in">string</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>使用 ts 要带入静态类型的思维,虽然会写出很多在js角度看起来很麻烦的类型代码,但是这些代码会让你的项目稳定性更高.<br>而空值设计可以让编写 ts 更加轻松稳定.</p>
+<blockquote>
+<p>如果你学习 typescript 发现怎么用都不顺手,我建议先学习一门纯粹的强静态类型语言(建议 golang ).去掌握强静态类型语言编程思维.<br>因为 TypeScript 是 对 JavaScript进行 类型批注,而不是真正意义上的静态类型语言.</p>
+</blockquote>
+<p>如果你觉得空值函数的设计不错,请将本文推荐给你的朋友或同事</p>
+<p>原文地址 <a target="_blank" rel="noopener" href="https://github.com/nimoc/blog/issues/33">https://github.com/nimoc/blog/issues/33</a> (原文保持持续更新)</p>
+<p>这样能让更多人提供更安全的make函数.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+      </div>
+      
+      <footer class="post-footer">
+        <div class="post-tags">
+            <a href="/tags/%E5%89%8D%E7%AB%AF/">前端</a>
+            <a href="/tags/TypeScript/">TypeScript</a>
+            </div>
+        
+        <nav class="post-nav"><a class="prev" href="/ts_go_generics/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">TypeScript 中 松散的类型当做药品</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    <a class="next" href="/var_new_make/">
+        <span class="next-text nav-default">go 中 var new make 的区别</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    </nav></footer>
+    </article></div><div class="comments" id="comments"></div></div>
+      </main>
+
+      <footer id="footer" class="footer"><div class="social-links"><a target="_blank" rel="noopener" href="https://github.com/nimoc" class="iconfont icon-github" title="github"></a>
+        <a target="_blank" rel="noopener" href="https://www.zhihu.com/people/nimoc" class="iconfont icon-zhihu" title="zhihu"></a>
+        </div><div class="copyright">
+  <a style="font-size:1em;" target="_blank" rel="noopener" href="https://beian.miit.gov.cn/" taregt="_blank">沪ICP备2021012662号</a>
+  <br />
+  <span class="copyright-year" style="display:none;" >&copy;2015 - 2021<span class="heart" hidden >
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author" hidden >nimoc</span>
+  </span>
+</div>
+</footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div><script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/src/even.js?v=2.11.0"></script>
+</body>
+</html>

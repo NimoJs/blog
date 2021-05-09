@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="description" content="本文主要通过代码示例和原因来解释 var new make 之间的区别。"/><meta name="keywords" content="go,go new,go slice,go var,go make" /><link rel="alternate" href="/atom.xml" title="nimo.fun技术博客" type="application/atom+xml"><link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/3949015?v=4?v=2.11.0" />
+<link rel="canonical" href="https://nimo.fun/var_new_make/"/>
+
+<link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.11.0" />
+
+<script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":"","latex":false};
+</script>
+<style>
+.header .logo-wrapper .logo {
+font-family: Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, "PingFang SC", Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+letter-spacing:-.02em;
+}
+html .post .post-content img {
+  box-shadow: 0px 0px .2em rgba(111,111,111,.4);
+  border-radius:.5em;
+  margin-left:auto;
+  margin-right:auto;
+  display:block;
+}
+.post .post-header .post-title ,
+.header .site-navbar .menu .menu-item-link,
+.post .post-content h1,
+.mobile-navbar .mobile-header-logo .logo,
+html body {
+ font-family: Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, "PingFang SC", Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+}
+.post .post-content h1 {
+display:none;
+}
+::selection {
+    background: #95beea;
+    color: #111;
+}
+html body {
+  background:white;
+}
+</style>
+
+    <title>go 中 var new make 的区别 - nimo.fun技术博客</title>
+  <meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">nimo.fun技术博客</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list"><a href="/">
+        <li class="mobile-menu-item">首页
+          </li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签
+          </li>
+      </a></ul>
+</nav>
+<div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">nimo.fun技术博客</a>
+</div>
+
+<nav class="site-navbar"><ul id="menu" class="menu"><li class="menu-item">
+          <a class="menu-item-link" href="/">
+            首页
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/tags/">
+            标签
+            </a>
+        </li>
+      </ul></nav>
+</header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content"><article class="post">
+    <header class="post-header">
+      <h1 class="post-title">go 中 var new make 的区别
+        </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-11
+        </span></div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">Contents</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#go-%E4%B8%AD-var-new-make-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">go 中 var new make 的区别</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#var-new"><span class="toc-text">var new</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#var-make-slice-array"><span class="toc-text">var make slice array</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#var-make-map"><span class="toc-text">var make map</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#make-chan"><span class="toc-text">make chan</span></a></li></ol></li></ol>
+    </div>
+  </div><div class="post-content"><h1 id="go-中-var-new-make-的区别"><a href="#go-中-var-new-make-的区别" class="headerlink" title="go 中 var new make 的区别"></a>go 中 var new make 的区别</h1><p><code>var</code> 用于声明变量。</p>
+<p><code>new</code> 分配内存空间，<code>func new(Type) *Type</code> 接收 一个类型，返回这个类型的指针，并将指针指向这个类型的零值（zero value）。</p>
+<p><code>make</code> 分配内存空间并根据参数初始化</p>
+<blockquote>
+<p>本文主要通过代码示例和原因来解释 var new make 之间的区别。</p>
+</blockquote>
+<h2 id="var-new"><a href="#var-new" class="headerlink" title="var new"></a>var new</h2><p>通过代码记忆最为合适</p>
+<p><a href="./var_new_make/var_new/main.go">var_new</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;log&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main () &#123;</span><br><span class="line">	&#123;</span><br><span class="line">		var i int</span><br><span class="line">		i++</span><br><span class="line">		log.Print(&quot;var i int &quot;,i)</span><br><span class="line">	&#125;</span><br><span class="line">	&#123;</span><br><span class="line">		func() &#123;</span><br><span class="line">			defer func() &#123;</span><br><span class="line">				log.Print(recover())</span><br><span class="line">			&#125;()</span><br><span class="line">			var i *int</span><br><span class="line">			&#x2F;&#x2F; panic: runtime error: invalid memory address or nil pointer dereference</span><br><span class="line">			&#x2F;&#x2F; 通过 var 声明的 *int 是空指针 递增会报错</span><br><span class="line">			*i++</span><br><span class="line">			log.Print(&quot;var i *int &quot;,*i)</span><br><span class="line">		&#125;()</span><br><span class="line">	&#125;</span><br><span class="line">	&#123;</span><br><span class="line">		var v int</span><br><span class="line">		&#x2F;&#x2F; 通过 &#x3D; &amp; 可以避免</span><br><span class="line">		var i *int &#x3D; &amp;v</span><br><span class="line">		*i++</span><br><span class="line">		log.Print(&quot;var i *int &#x3D; &amp;v &quot;,*i)</span><br><span class="line">	&#125;</span><br><span class="line">	&#123;</span><br><span class="line">		&#x2F;&#x2F; 或者使用 new （分配空间，并将指针指向零值）</span><br><span class="line">		var i *int &#x3D; new(int)</span><br><span class="line">		*i++</span><br><span class="line">		log.Print(&quot;var i *int &#x3D; new(int)&quot;,*i)</span><br><span class="line">	&#125;</span><br><span class="line">	&#123;</span><br><span class="line">		&#x2F;&#x2F; 可以进一步简写</span><br><span class="line">		i :&#x3D; new(int)</span><br><span class="line">		*i++</span><br><span class="line">		log.Print(&quot;i :&#x3D; new(int)&quot;,*i)</span><br><span class="line">	&#125;</span><br><span class="line">	&#x2F;&#x2F; interface 有可以使用 new 创建一个指向 nil 的指针</span><br><span class="line">	type Closer interface &#123;</span><br><span class="line">		Close() error</span><br><span class="line">	&#125;</span><br><span class="line">	newCloser :&#x3D; new(Closer)</span><br><span class="line">	log.Print(&quot;newCloser:&quot;, newCloser) &#x2F;&#x2F; 内存地址</span><br><span class="line">	log.Print(&quot;*newCloser:&quot;, *newCloser)&#x2F;&#x2F; nil</span><br><span class="line">	&#x2F;&#x2F; 不过目前我不知道有什么合适的场景使用 new(interface)</span><br><span class="line">	&#x2F;&#x2F; 欢迎留言补充 https:&#x2F;&#x2F;github.com&#x2F;goclub&#x2F;book&#x2F;issues&#x2F;new</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="var-make-slice-array"><a href="#var-make-slice-array" class="headerlink" title="var make slice array"></a>var make slice array</h2><p><a href="./var_new_make/var_make_slice_array/doc_test.go">var_make_slice_array</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line">package doc_test</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;github.com&#x2F;stretchr&#x2F;testify&#x2F;assert&quot;</span><br><span class="line">	&quot;log&quot;</span><br><span class="line">	&quot;testing&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func TestVarSlice(t *testing.T) &#123;</span><br><span class="line">	log.Print(&quot;声明并初始化切片&quot;)</span><br><span class="line">	var numbers &#x3D; []int&#123;1,2,3&#125;</span><br><span class="line">	assert.Equal(t, len(numbers), 3)</span><br><span class="line">&#125;</span><br><span class="line">func TestMakeSliceLen0(t *testing.T) &#123;</span><br><span class="line">			log.Print(&quot;通过 make 声明并初始化切片&quot;)</span><br><span class="line">			var numbers &#x3D; make([]int, 0)</span><br><span class="line">			&#x2F;&#x2F; 等同于 numbers :&#x3D; []int&#123;&#125;</span><br><span class="line">			assert.Equal(t, numbers, []int&#123;&#125;)</span><br><span class="line">			assert.Equal(t, len(numbers), 0)</span><br><span class="line">			numbers &#x3D; append(numbers, 1,2,3)</span><br><span class="line">			assert.Equal(t, len(numbers), 3)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func TestMakeSliceLen2(t *testing.T) &#123;</span><br><span class="line">	log.Print(&quot;通过 make 声明并初始化切片长度为2， 初始化元素为类型的 zero value (0)&quot;)</span><br><span class="line">	var numbers &#x3D; make([]int, 2)</span><br><span class="line">	&#x2F;&#x2F; 等同于 numbers :&#x3D; []int&#123;0, 0&#125;</span><br><span class="line">	assert.Equal(t, numbers, []int&#123;0, 0&#125;)</span><br><span class="line">	assert.Equal(t, len(numbers), 2)</span><br><span class="line">	numbers &#x3D; append(numbers, 1,2,3)</span><br><span class="line">	assert.Equal(t, numbers, []int&#123;0, 0, 1, 2, 3&#125;)</span><br><span class="line">	assert.Equal(t, len(numbers), 5)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func TestArray(t *testing.T) &#123;</span><br><span class="line">	log.Print(&quot;创建数组（固定长度的切片）数组元素为 zero value&quot;)</span><br><span class="line">	&#x2F;&#x2F; 此处的 2 是 cap</span><br><span class="line">	var numbers &#x3D; [2]int&#123;&#125;</span><br><span class="line">	assert.Equal(t, numbers[0], 0)</span><br><span class="line">	assert.Equal(t, numbers[1], 0)</span><br><span class="line">	&#x2F;&#x2F; &#x2F;&#x2F; 如果 index(10) 超出了 cap(2) 则会发生**编译期**错误</span><br><span class="line">	&#x2F;&#x2F; log.Print(numbers[10])</span><br><span class="line">	assert.Equal(t, len(numbers), 2)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func TestArrayLen2Cap2(t *testing.T) &#123;</span><br><span class="line">	log.Print(&quot;通过 make 创建长度2 容量2的数字，初始化元素为类型的 zero value (0)&quot;)</span><br><span class="line">	var numbers &#x3D; make([]int, 2, 2)</span><br><span class="line">	&#x2F;&#x2F; 等同于 numbers :&#x3D; []int&#123;0,0&#125;</span><br><span class="line">	assert.Equal(t, numbers, []int&#123;0,0&#125;)</span><br><span class="line">	assert.Equal(t, len(numbers), 2)</span><br><span class="line">	assert.Equal(t, cap(numbers), 2)</span><br><span class="line">	numbers[0] &#x3D; 9</span><br><span class="line">	assert.Equal(t, numbers, []int&#123;9,0&#125;)</span><br><span class="line">	&#x2F;&#x2F; 如果 index(10) 超出了 cap(2) 则会发生**运行时**错误</span><br><span class="line">	&#x2F;&#x2F; numbers[10] &#x3D; 9</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func TestArrayLen0Cap2(t *testing.T) &#123;</span><br><span class="line">	log.Print(&quot;通过 make 创建长度0 容量2的数组&quot;)</span><br><span class="line">	var numbers &#x3D; make([]int, 0, 2)</span><br><span class="line">	assert.Equal(t, numbers, []int&#123;&#125;)</span><br><span class="line">	assert.Equal(t, len(numbers), 0)</span><br><span class="line">	assert.Equal(t, cap(numbers), 2)</span><br><span class="line"></span><br><span class="line">	numbers &#x3D; append(numbers, 1)</span><br><span class="line">	assert.Equal(t, numbers, []int&#123;1&#125;)</span><br><span class="line">	assert.Equal(t, len(numbers), 1)</span><br><span class="line">	assert.Equal(t, cap(numbers), 2)</span><br><span class="line"></span><br><span class="line">	numbers &#x3D; append(numbers, 2)</span><br><span class="line">	assert.Equal(t, numbers, []int&#123;1,2&#125;)</span><br><span class="line">	assert.Equal(t, len(numbers), 2)</span><br><span class="line">	assert.Equal(t, cap(numbers), 2)</span><br><span class="line"></span><br><span class="line">	numbers &#x3D; append(numbers, 3)</span><br><span class="line">	assert.Equal(t, numbers, []int&#123;1,2,3&#125;)</span><br><span class="line">	assert.Equal(t, len(numbers), 3)</span><br><span class="line">	assert.Equal(t, cap(numbers), 4)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func TestMakeArrayLen0Cap2Panic(t *testing.T) &#123;</span><br><span class="line">	log.Print(&quot;大部分场景下 numbers :&#x3D; make([]string, len, cap) len 和 cap 设置的不一致是没有意义的&quot;)</span><br><span class="line">	func() &#123;</span><br><span class="line">		defer func() &#123;</span><br><span class="line">			log.Print(recover())</span><br><span class="line">		&#125;()</span><br><span class="line">		numbers :&#x3D; make([]int, 0, 2)</span><br><span class="line">		log.Print(&#96;因为 numbers[0] &#x3D; 1 会panic&#96;)</span><br><span class="line">		numbers[0] &#x3D; 1</span><br><span class="line">	&#125;()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="var-make-map"><a href="#var-make-map" class="headerlink" title="var make map"></a>var make map</h2><p><a href="./var_new_make/var_make_map/doc_test.go">var_make_map</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">package doc_test</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;github.com&#x2F;stretchr&#x2F;testify&#x2F;assert&quot;</span><br><span class="line">	&quot;log&quot;</span><br><span class="line">	&quot;testing&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func TestVarMap(t *testing.T) &#123;</span><br><span class="line">	log.Print(&quot;声明变量，但没有分配空间&quot;)</span><br><span class="line">	var data map[string]int</span><br><span class="line">	assert.Equal(t, data, map[string]int(nil))</span><br><span class="line">&#125;</span><br><span class="line">func TestDeclareEmptyMap(t *testing.T) &#123;</span><br><span class="line">	defer func() &#123;</span><br><span class="line">		log.Print(recover())</span><br><span class="line">	&#125;()</span><br><span class="line">	log.Print(&quot;只声明变量，不分配空间，赋值时会panic&quot;)</span><br><span class="line">	var data map[string]int</span><br><span class="line">	data[&quot;age&quot;] &#x3D; 1</span><br><span class="line">&#125;</span><br><span class="line">func TestMap(t *testing.T) &#123;</span><br><span class="line">	log.Print(&quot;声明变量，并初始化赋值&quot;)</span><br><span class="line">	var data &#x3D; map[string]int&#123;&#125;</span><br><span class="line">	assert.Equal(t, data, map[string]int&#123;&#125;)</span><br><span class="line"></span><br><span class="line">	data[&quot;name&quot;] &#x3D; 1</span><br><span class="line">	assert.Equal(t, data, map[string]int&#123;&quot;name&quot;:1&#125;)</span><br><span class="line">&#125;</span><br><span class="line">func TestMakeMap(t *testing.T) &#123;</span><br><span class="line">	log.Print(&quot;通过 make 分配空间，也可以避免panic&quot;)</span><br><span class="line">	var data &#x3D; make(map[string]int)</span><br><span class="line">	assert.Equal(t, data, map[string]int&#123;&#125;)</span><br><span class="line"></span><br><span class="line">	data[&quot;name&quot;] &#x3D; 1</span><br><span class="line">	assert.Equal(t, data, map[string]int&#123;&quot;name&quot;:1&#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="make-chan"><a href="#make-chan" class="headerlink" title="make chan"></a>make chan</h2><p><a href="./var_new_make/make_chan/main.go">make_chan</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import &quot;log&quot;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	&#123;</span><br><span class="line">		&#x2F;&#x2F; 只是声明变量</span><br><span class="line">		var nameCh chan string</span><br><span class="line">		&#x2F;&#x2F; 通过 make 初始化空间</span><br><span class="line">		nameCh &#x3D; make(chan string) &#x2F;&#x2F; 注释这一行会因为 nameCh 没有分配内存空间导致死锁</span><br><span class="line">		log.Print(&quot;nameCh &quot;, nameCh) &#x2F;&#x2F; 内存地址</span><br><span class="line">		go func() &#123;</span><br><span class="line">			nameCh &lt;- &quot;nimoc&quot;</span><br><span class="line">		&#125;()</span><br><span class="line">		name :&#x3D; &lt;-nameCh</span><br><span class="line">		log.Print(name)</span><br><span class="line">	&#125;</span><br><span class="line">	&#123;</span><br><span class="line">		&#123;</span><br><span class="line">			&#x2F;&#x2F; 代码可以更简洁一点</span><br><span class="line">			nameCh :&#x3D; make(chan string)</span><br><span class="line">			log.Print(&quot;nameCh &quot;, nameCh) &#x2F;&#x2F; 内存地址</span><br><span class="line">			go func() &#123;</span><br><span class="line">				nameCh &lt;- &quot;nimoc&quot;</span><br><span class="line">			&#125;()</span><br><span class="line">			name :&#x3D; &lt;-nameCh</span><br><span class="line">			log.Print(name)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+      </div>
+      
+      <footer class="post-footer">
+        <div class="post-tags">
+            <a href="/tags/%E5%90%8E%E7%AB%AF/">后端</a>
+            <a href="/tags/go/">go</a>
+            </div>
+        
+        <nav class="post-nav"><a class="prev" href="/zero_value_typescript/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">利用空值设计让 TypeScript 更稳定和易于维护</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    <a class="next" href="/var_new_make.source/">
+        <span class="next-text nav-default">go 中 var new make 的区别</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    </nav></footer>
+    </article></div><div class="comments" id="comments"></div></div>
+      </main>
+
+      <footer id="footer" class="footer"><div class="social-links"><a target="_blank" rel="noopener" href="https://github.com/nimoc" class="iconfont icon-github" title="github"></a>
+        <a target="_blank" rel="noopener" href="https://www.zhihu.com/people/nimoc" class="iconfont icon-zhihu" title="zhihu"></a>
+        </div><div class="copyright">
+  <a style="font-size:1em;" target="_blank" rel="noopener" href="https://beian.miit.gov.cn/" taregt="_blank">沪ICP备2021012662号</a>
+  <br />
+  <span class="copyright-year" style="display:none;" >&copy;2015 - 2021<span class="heart" hidden >
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author" hidden >nimoc</span>
+  </span>
+</div>
+</footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div><script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/src/even.js?v=2.11.0"></script>
+</body>
+</html>
