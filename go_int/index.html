@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head><link rel="stylesheet" type="text/css" href="https://nimo.fun/css/style.css?v=2.11.0" />
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="description" content="列举一些 int 使用不当的坑"/><meta name="keywords" content="go,go int," /><link rel="alternate" href="/atom.xml" title="nimo.fun 技术博客" type="application/atom+xml"><link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/3949015?v=4?v=2.11.0" />
+<link rel="canonical" href="https://nimo.fun/go_int/"/>
+
+<link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.11.0" />
+
+<script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":"","latex":false};
+</script>
+<style>
+.header .logo-wrapper .logo {
+font-family: Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, "PingFang SC", Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+letter-spacing:-.02em;
+}
+html .post .post-content img {
+  border:.1em rgba(11,11,11,.2) dotted;
+  border-radius:.3em;
+  margin-left:auto;
+  margin-right:auto;
+  display:block;
+}
+.post .post-header .post-title ,
+.header .site-navbar .menu .menu-item-link,
+.post .post-content h1,
+.mobile-navbar .mobile-header-logo .logo,
+html body {
+ font-family: Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, "PingFang SC", Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+}
+.post .post-content h1 {
+display:none;
+}
+::selection {
+    background: #95beea;
+    color: #111;
+}
+html body {
+  background:white;
+}
+.home-tags {
+    font-size:12px;
+    background:rgba(111,111,111,.1);
+    border-radius:.3em;
+    padding:.2em .3em;
+}
+</style>
+
+    <title>深入浅出 go int 类型 - nimo.fun 技术博客</title>
+  <meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">nimo.fun 技术博客</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list"><a href="/">
+        <li class="mobile-menu-item">首页
+          </li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签
+          </li>
+      </a></ul>
+</nav>
+<div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">nimo.fun 技术博客</a>
+</div>
+
+<nav class="site-navbar"><ul id="menu" class="menu"><li class="menu-item">
+          <a class="menu-item-link" href="/">
+            首页
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/tags/">
+            标签
+            </a>
+        </li>
+      </ul></nav>
+</header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content"><article class="post">
+    <header class="post-header">
+      <h1 class="post-title" id="深入浅出 go int 类型" >深入浅出 go int 类型
+        </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-11
+        </span></div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">Contents</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#go%E4%B8%AD%E7%9A%84int"><span class="toc-text">go中的int</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#bit"><span class="toc-text">bit</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#byte"><span class="toc-text">byte</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bitmap"><span class="toc-text">bitmap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#unicode"><span class="toc-text">unicode</span></a></li></ol></li></ol>
+    </div>
+  </div><div class="post-content"><h1 id="go中的int"><a href="#go中的int" class="headerlink" title="go中的int"></a>go中的int</h1><blockquote>
+<p>这是一篇计算机基础介绍文章，可帮助不了解计算机基础的读者初探计算机基础的同时了解go中的 int<br>文中还列举出一些 int 使用不当的坑</p>
+</blockquote>
+<p>go 中有 <code>int</code> 来表示数字类型，并且还有 <code>uint</code> 类型，还细分出:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="keyword">uint8</span></span><br><span class="line"><span class="keyword">type</span> <span class="keyword">uint16</span></span><br><span class="line"><span class="keyword">type</span> <span class="keyword">uint32</span></span><br><span class="line"><span class="keyword">type</span> <span class="keyword">uint64</span></span><br><span class="line"><span class="keyword">type</span> <span class="keyword">int8</span></span><br><span class="line"><span class="keyword">type</span> <span class="keyword">int16</span></span><br><span class="line"><span class="keyword">type</span> <span class="keyword">int32</span></span><br><span class="line"><span class="keyword">type</span> <span class="keyword">int64</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="bit"><a href="#bit" class="headerlink" title="bit"></a>bit</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// uint8 is the set of all unsigned 8-bit integers.</span></span><br><span class="line"><span class="comment">// Range: 0 through 255.</span></span><br><span class="line"><span class="keyword">type</span> <span class="keyword">uint8</span> <span class="keyword">uint8</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>类型 uint8 的数字的范围是 0 到 255</p>
+</blockquote>
+<p>只所以取名 uint8 而不是 uint7 uint9 是因为uint8 使用 8个bit存储数据。</p>
+<blockquote>
+<p>bit/比特：  binary digit/二进制数字</p>
+</blockquote>
+<p>bit 是计算机表示信息的最小单位，你可以让计算机中的数据非常多的灯泡组成的。灯泡<strong>明</strong>亮时为<code>1</code>，灯泡灰<strong>暗</strong>时候为<code>0</code>。</p>
+<blockquote>
+<p>实际上计算机电路中高电平为1 ，低电平为0</p>
+</blockquote>
+<p>当我们有8个灯泡时，灯泡的明暗可以有好很多中组合，比如:</p>
+<ul>
+<li>0000 0000</li>
+<li>0000 0001</li>
+<li>0000 0010</li>
+<li>…</li>
+<li>1111 1110</li>
+<li>1111 1110</li>
+</ul>
+<blockquote>
+<p>为了方便阅读，每四个灯泡增加一个空格。</p>
+</blockquote>
+<p>通过简单的数学算一下 2的8次方</p>
+<p><code>pow(2,8) = 256</code></p>
+<p>给每个状态加一个编号，则有256个编号。</p>
+<ul>
+<li>0: 0000 0000</li>
+<li>1: 0000 0001</li>
+<li>2: 0000 0010</li>
+<li>…</li>
+<li>254: 1111 1110</li>
+<li>255: 1111 1110</li>
+</ul>
+<blockquote>
+<p>因为从 0 开始编号，所以最后一个状态是255</p>
+</blockquote>
+<p>此时回到计算机的世界，将灯泡视为bit。我们知道了8个bit可以表达256种状态，如果用来表示数字可以 从0表达到255。<br>故此 uint8 的范围是 0 ~ 256。</p>
+<p>如果数据只有一个bit,只能表达2种状态，表达能力有限。所以计算机行业约定8个bit为一个byte(字节)。编程语言中大部分场景以 byte 为最小单位。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// int8 is the set of all signed 8-bit integers.</span></span><br><span class="line"><span class="comment">// Range: -128 through 127.</span></span><br><span class="line"><span class="keyword">type</span> <span class="keyword">int8</span> <span class="keyword">int8</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>类型 int8 的数字的范围是 -128 到 127</p>
+</blockquote>
+<p>uint 中的 <code>u</code> 的意思是 <code>unsigned</code> 无符号。没有 <code>-</code> 没有 <code>.</code> 等数学符号，那就只能是0和正整数。</p>
+<p>int 则没有了 <code>u</code> 则允许出现负整数，例如 <code>-1</code> <code>-2</code>。</p>
+<blockquote>
+<p>int = integer = 整数</p>
+</blockquote>
+<p>而 8个bit只能表达 256 个状态，那需要考虑正数和负数分别占多少。</p>
+<ol>
+<li>负整数占 128 个： <code>-128</code> 至 <code>-1</code></li>
+<li>零 占 1 个</li>
+<li>正整数占127个</li>
+</ol>
+<p><code>128 + 1 + 127 = 256</code></p>
+<p>所以类型 int8 的数字的范围是 -128 到 127。</p>
+<p>弄清楚了 uint8 和 int8 ，再来看 uint16 int16 uint32 int32 uint64 int64 就好理解了。</p>
+<p>类型名中int和 uint 后面的数字表示的是在计算机中存储多少bit。</p>
+<p>计算机中有很多与 byte(8bit) 相关的数据格式例如 RGB。程序员为了节省空间选择了byte来存储信息，<br>所以RGB的范围是 <code>rgb(0,0,0)</code> 到 <code>rgb(255,255,255)</code>。</p>
+<p>在 go 中可能出现强制类型转换的代码，例如:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;log&quot;</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">some</span><span class="params">(n <span class="keyword">int64</span>)</span></span> &#123;</span><br><span class="line">	log.Print(n)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span> <span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> a <span class="keyword">int32</span></span><br><span class="line">	a = <span class="number">1</span></span><br><span class="line">	some(<span class="keyword">int64</span>(a))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>类似上面的低bit转换为高bit的代码不会发生编译期错误和运行时错误。</p>
+<p>但是高bit转换为低bit就会发生意想不到的错误。例如：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;log&quot;</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">some</span><span class="params">(n <span class="keyword">uint8</span>)</span></span> &#123;</span><br><span class="line">	log.Print(n) <span class="comment">// 255</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span> <span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> a <span class="keyword">uint16</span></span><br><span class="line">	a = <span class="number">65535</span></span><br><span class="line">	some(<span class="keyword">uint8</span>(a))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>uint8 强制转换 uint16 在编译期和运行期都不会报错，但大部分情况下会产生bug，因为程序员期望打印的值是 65535。</p>
+<p>之所以出现 255 是因为 uint8 最高只能存储255，所以大容量类型转换为小容量类型时需判断容量是否足够。</p>
+<blockquote>
+<p>TODO: 加上 goclub/conv 实现转换的代码</p>
+</blockquote>
+<h2 id="byte"><a href="#byte" class="headerlink" title="byte"></a>byte</h2><h2 id="bitmap"><a href="#bitmap" class="headerlink" title="bitmap"></a>bitmap</h2><h2 id="unicode"><a href="#unicode" class="headerlink" title="unicode"></a>unicode</h2>
+      </div>
+      
+      <footer class="post-footer">
+        <div class="post-tags">
+            <a href="/tags/go/">go</a>
+            </div>
+        
+        <nav class="post-nav"><a class="prev" href="/zero_value_typescript/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">利用空值设计让 TypeScript 更稳定和易于维护</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    </nav></footer>
+    </article></div><script src="https://utteranc.es/client.js"
+        repo="nimoc/blog"
+        issue-number="52"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><div class="comments" id="comments"></div></div>
+      </main>
+
+      <footer id="footer" class="footer"><div class="social-links"><a target="_blank" rel="noopener" href="https://github.com/nimoc" class="iconfont icon-github" title="github"></a>
+        <a target="_blank" rel="noopener" href="https://www.zhihu.com/people/nimoc" class="iconfont icon-zhihu" title="zhihu"></a>
+        </div><div class="copyright">
+  <a style="font-size:1em;" target="_blank" rel="noopener" href="https://beian.miit.gov.cn/" taregt="_blank">沪ICP备2021012662号</a>
+  <br />
+  <span class="copyright-year" style="display:none;" >&copy;2015 - 2021<span class="heart" hidden >
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author" hidden >nimoc</span>
+  </span>
+</div>
+</footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div><script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/src/even.js?v=2.11.0"></script>
+</body>
+</html>
