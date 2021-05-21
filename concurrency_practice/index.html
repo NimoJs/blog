@@ -131,15 +131,19 @@ html body {
     <div class="post-toc" id="post-toc">
     <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%B9%B6%E5%8F%91%E6%96%B9%E6%B3%95%E8%AE%BA"><span class="toc-text">解决并发方法论</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#redis-%E4%BA%92%E6%96%A5%E9%94%81"><span class="toc-text">redis 互斥锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sql%E7%BA%A2%E5%8C%85%E6%B1%A0"><span class="toc-text">sql红包池</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%B9%B6%E5%8F%91%E6%96%B9%E6%B3%95%E8%AE%BA"><span class="toc-text">解决并发方法论</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#redis-%E4%BA%92%E6%96%A5%E9%94%81"><span class="toc-text">redis 互斥锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sql%E7%BA%A2%E5%8C%85%E6%B1%A0"><span class="toc-text">sql红包池</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%90%E5%88%B6%E4%B8%AD%E5%A5%96%E6%AC%A1%E6%95%B0"><span class="toc-text">限制中奖次数</span></a></li></ol></li></ol>
     </div>
-  </div><div class="post-content"><h1 id="解决并发方法论"><a href="#解决并发方法论" class="headerlink" title="解决并发方法论"></a>解决并发方法论</h1><p><a href="https://nimo.fun/notice/"><img src="http://nimo.fun/notice/index.svg" alt="nimo.fun"></a></p>
+  </div><div class="post-content"><h1 id="解决并发方法论"><a href="#解决并发方法论" class="headerlink" title="解决并发方法论"></a>解决并发方法论</h1><p>并发产生的问题一般是因为多个进程的读写不是顺序执行而导致的，想要解决并发问题就需要让操作顺序执行。</p>
+<p>原子性，堵塞都是让操作顺序执行的发放。</p>
+<p><a href="https://nimo.fun/notice/"><img src="http://nimo.fun/notice/index.svg" alt="nimo.fun"></a></p>
 <p>首先记住以下几点</p>
 <ol>
 <li><strong>原子性</strong>：确认哪些操作不是原子性，考虑不是原子性会导致什么问题。并考虑所有操作都可能失败或进程/协程中断</li>
 <li><strong>操作延迟</strong>：代码中每个操作的执行时间都是不确定的。每一行之间都可能出现非常大的延迟，需假设每行代码之间都有 sleep 操作。网络io中客户端收到消息的时间距离服务端发送消息已经过了很久，需假设:0s client 发起请求-&gt; 2s server 接收请求 -&gt; 4s server 响应数据 -&gt; 6s client 接收响应</li>
 <li><strong>竞态</strong>：考虑会有其他线程/协程/同一时间对数据进行修改</li>
 <li>通过时序图分析问题 <a target="_blank" rel="noopener" href="https://plantuml.com/zh/">https://plantuml.com/zh/</a></li>
+<li>不是每一个并发问题都要解决，某些场景下并发带来的”问题”可以忽略，因为它们不是 Bug ，是一种为了性能和低复杂的做出的牺牲。</li>
+<li>不要只说”这样有并发问题”，而不说并发到底带来了什么问题。准确的描述出问题是什么，问题是不是 bug。</li>
 </ol>
 <h2 id="redis-互斥锁"><a href="#redis-互斥锁" class="headerlink" title="redis 互斥锁"></a>redis 互斥锁</h2><p>以 redis 互斥锁为案例实现上述方法论：</p>
 <p>先看一下不严谨的上锁操作会产生的问题</p>
@@ -183,7 +187,34 @@ html body {
 <blockquote>
 <p>红包业务可以考虑不使用红包池，而使用可发红包数量。这里不继续展开，感兴趣的可以给作者留言。 <a target="_blank" rel="noopener" href="https://github.com/nimoc/blog">https://github.com/nimoc/blog</a></p>
 </blockquote>
-<p>原文地址 <a href="https://nimo.fun/concurrency_practice/">https://nimo.fun/concurrency_practice/</a> (原文保持持续更新和更多的评论)</p>
+<h2 id="限制中奖次数"><a href="#限制中奖次数" class="headerlink" title="限制中奖次数"></a>限制中奖次数</h2><blockquote>
+<p>不能直接上锁的数据根据数据内容，计算出一个key,以这个 key 作为锁。</p>
+</blockquote>
+<p><strong>需求</strong>： 限制中奖次数</p>
+<ol>
+<li>限制永久中奖 3 次</li>
+<li>限制每天中奖 3 次</li>
+<li>限制2天内只能中奖 3 次</li>
+</ol>
+<p><strong>数据结构</strong>：</p>
+<p>最基础的数据是sql表存储中奖几率</p>
+<p>prize_record<br>id,user_id,created_at,updated_at</p>
+<p><strong>问题</strong>:</p>
+<p>发放之前需要检查中奖次数，再插入记录并发放。<br>但是遇到并发场景时因为读（检查中奖次数）和写（插入记录并发放）不是原子性会导致其他线程也再读写导致并发问题。</p>
+<p><strong>思考过程</strong>:</p>
+<ol>
+<li>如果不考虑性能和高可用，就锁整张表</li>
+<li>控制锁的范围，改为用户级别。（但是怎么做到用户级别的锁）</li>
+<li></li>
+</ol>
+<p><strong>解决方法</strong>：</p>
+<p>因为数据是基于单个用户去操作，所以可以使用锁方案。</p>
+<ol>
+<li><strong>使用 redis 做范围锁</strong> 使用 redis 设置一个读写锁，拿到锁才能去读写。 锁的 key 是  user_id + prize_idk</li>
+<li><strong>创建出可锁的数据</strong>每次 insert prize_record 时 给一个 prize_counter: id,user_id,prize_id,count 表 的 count 递增。 读写时用 sql 的FOR UPDATE 锁避免并发。</li>
+<li>计算出 <strong>order</strong> 作为 发放锁 （锁可以用 redis setnx 或 sql unique ）</li>
+</ol>
+<p>原文地址 htlutps://nimo.fun/concurrency_practice/ (原文保持持续更新和更多的评论)</p>
 
       </div>
       
